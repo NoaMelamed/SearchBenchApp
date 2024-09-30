@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/retToIntro"
+        android:title="Return to intro"
+        android:icon="@drawable/home_screen_button_logo"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/closeApp"
+        android:title="Close app"
+        android:icon="@drawable/exit_app_button_logo"
+        app:showAsAction="ifRoom"
+
+        />
+</menu>
