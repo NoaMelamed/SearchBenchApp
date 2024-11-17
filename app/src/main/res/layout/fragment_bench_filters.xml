@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="700dp"
+    android:layout_gravity="center"
+    android:elevation="8dp"
+    android:background="#d8e4bc"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose Filters"
+        android:textSize="18sp"
+        android:textColor="#632240" />
+
+    <!-- Size -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Size preferences:"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupBenchSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioSingleSeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Single Seat" />
+
+        <RadioButton
+            android:id="@+id/radioRegularSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regular Size" />
+    </RadioGroup>
+
+    <!-- Shade -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shade:"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
+
+    <Switch
+        android:id="@+id/switchShade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="In the Shade" />
+
+    <!-- Street -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Street preferences:"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
+
+    <Switch
+        android:id="@+id/switchQuietStreet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quiet Street" />
+
+    <Switch
+        android:id="@+id/switchNearCafe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Near a coffeeshop" />
+
+    <!-- Distance -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="General"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
+
+    <Switch
+        android:id="@+id/switchShortDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1km or under" />
+
+    <Switch
+        android:id="@+id/switchHighRated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rated 4+" />
+
+    <Button
+        android:id="@+id/applyFiltersButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="Apply"
+        android:backgroundTint="#632240"
+        android:textColor="#FFFFFF" />
+</LinearLayout>

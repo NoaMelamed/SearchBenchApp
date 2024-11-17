@@ -1,5 +1,6 @@
 package com.example.noaandroid;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.widget.Toast;
 
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -57,13 +59,31 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        private void loginClient(String emailLogin, String passwordLogin) {
-            auth.signInWithEmailAndPassword(emailLogin, passwordLogin).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                @Override
-                public void onSuccess(AuthResult authResult) {
-                    // NEXT ACTIVITY
-                }
-            });
-        }
+    }
+
+    private void loginClient(String emailLogin, String passwordLogin) {
+        auth.signInWithEmailAndPassword(emailLogin, passwordLogin).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+            @Override
+            public void onSuccess(AuthResult authResult) {
+                showLoginAlertDialog();
+            }
+        });
+    }
+
+    private void showLoginAlertDialog() {
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle("Welcome to SearchMyBench!");
+        adb.setMessage("Glad you signed in! Now let's find you a bench");
+        adb.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        adb.setCancelable(false); // Prevent dialog from being dismissed on outside touch or back press
+        AlertDialog dialog = adb.create();
+        dialog.show();
     }
 }
