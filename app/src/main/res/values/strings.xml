@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">NoaAndroid</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_home">HomeActivity</string>
+    <string name="drawer_open">Open Drawer</string> <!-- Add this line -->
+    <string name="drawer_close">Close Drawer</string>
+    <string name="add_a_new_bench">Add a new bench</string>
+    <string name="find_a_bench">Find a bench</string>
+    <string-array name="bench_size_options">
+        <item>Single</item>
+        <item>Regular</item>
+        <item>Picnic</item>
+    </string-array>
 </resources>

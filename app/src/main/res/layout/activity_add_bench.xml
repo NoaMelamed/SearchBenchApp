@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Main content inside a ScrollView -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#d8e4bc">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/toolbar"/>
+
+            <EditText
+                android:id="@+id/et_bench_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="90dp"
+                android:hint="Bench Name"/>
+
+            <Button
+                android:id="@+id/btn_select_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#632240"
+                android:text="Select Location"/>
+
+            <RatingBar
+                android:id="@+id/rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="1.0"/>
+
+            <CheckBox
+                android:id="@+id/cb_shade"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Under Shade"/>
+
+            <CheckBox
+                android:id="@+id/cb_quiet_street"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quiet Street"/>
+
+            <CheckBox
+                android:id="@+id/cb_near_cafe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Near Cafe"/>
+
+            <Spinner
+                android:id="@+id/sp_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/bench_size_options"/>
+
+            <ImageView
+                android:id="@+id/image_preview"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
+                android:background="#DDD"
+                android:contentDescription="Image Preview"/>
+
+            <!-- Submit button -->
+            <Button
+                android:id="@+id/btn_submit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#632240"
+                android:text="Submit"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Navigation Drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:menu="@menu/nav_menu_new"
+        app:headerLayout="@layout/nav_header"/>
+</androidx.drawerlayout.widget.DrawerLayout>

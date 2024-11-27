@@ -1,77 +1,91 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="#d8e4bc">
-
-<LinearLayout
+<?xml version="1.0" encoding="UTF-8" ?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="140dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="1dp"
-        app:srcCompat="@drawable/new_logo_text_only" />
 
-    <TextView
-        android:id="@+id/titleTextView"
+    <!-- Navigation View -->
+    <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Benches Near Me"
-        android:textColor="#632240"
-        android:textSize="24sp"
-        android:layout_marginTop="10dp"
-        android:fontFamily="sans-serif-medium"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp" />
+        android:layout_height="match_parent"
+        android:id="@+id/nav_view"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/nav_menu_new"
+        android:layout_gravity="start"/>
 
-    <TextView
-        android:id="@+id/filterByTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Filter By"
-        android:textColor="#632240"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif-medium"
-        android:background="#ffffff"
-        android:padding="8dp"
-        android:layout_gravity="end"
-        android:elevation="4dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_marginBottom="8dp" />
 
-    <fragment
-        android:id="@+id/mapFragment"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <!-- Main Content -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#d8e4bc">
 
-    <!-- Find Me a Bench Button -->
-    <Button
-        android:id="@+id/findBenchButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Find Me a Bench"
-        android:textColor="#ffffff"
-        android:backgroundTint="#632240"
-        android:fontFamily="sans-serif-medium"
-        android:layout_marginTop="16dp" />
 
-</LinearLayout>
+        <include layout="@layout/toolbar"/>
 
-<!-- Fragment Container -->
-<FrameLayout
-    android:id="@+id/filterFragmentContainer"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="gone" /> <!-- Initially hidden -->
-</FrameLayout>
 
+        <!-- Title -->
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Benches Near Me"
+            android:textColor="#632240"
+            android:textSize="24sp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Filter By Text -->
+        <TextView
+            android:id="@+id/filterByTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filter By"
+            android:textColor="#632240"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-medium"
+            android:background="#ffffff"
+            android:padding="8dp"
+            android:layout_gravity="end"
+            android:elevation="4dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Map Fragment -->
+        <fragment
+            android:id="@+id/mapFragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Find Me a Bench Button -->
+        <Button
+            android:id="@+id/findBenchButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Find Me a Bench"
+            android:textColor="#ffffff"
+            android:backgroundTint="#632240"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginTop="16dp" />
+
+        <!-- Container for the Filter Fragment (this is the missing element) -->
+        <FrameLayout
+            android:id="@+id/filterFragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" /> <!-- Initially hidden -->
+
+    </LinearLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

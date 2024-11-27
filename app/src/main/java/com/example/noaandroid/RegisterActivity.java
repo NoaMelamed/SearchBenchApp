@@ -19,6 +19,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
+/**
+ * Activity for user registration.
+ * Handles user input, validates credentials, and registers the user with Firebase Authentication.
+ */
 public class RegisterActivity extends AppCompatActivity {
 
     @Override
@@ -26,50 +30,57 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_layout);
 
+        // Reference to the register button in the layout.
         Button registerButton = findViewById(R.id.register_button);
 
+        // Initialize Firebase Authentication instance.
         FirebaseAuth auth;
         auth = FirebaseAuth.getInstance();
+
+        // Set up the click listener for the register button.
         registerButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // Get user inputs from the form.
                 EditText etEmailRegister = findViewById(R.id.et_email_register);
                 EditText etNameRegister = findViewById(R.id.et_name_register);
                 EditText etPwdRegister = findViewById(R.id.et_password_register);
                 EditText etRePwdRegister = findViewById(R.id.et_rePassword_register);
                 EditText etPhoneRegister = findViewById(R.id.et_phone_register);
 
+                // Retrieve text input from EditText fields.
                 String nameRegister = etNameRegister.getText().toString();
                 String pwdRegister = etPwdRegister.getText().toString();
                 String rePwdRegister = etRePwdRegister.getText().toString();
                 String phoneRegister = etPhoneRegister.getText().toString();
                 String emailRegister = etEmailRegister.getText().toString();
 
-                // Validate password and confirm password
+                // Validate password: check if it's at least 6 characters long.
                 if (pwdRegister.isEmpty() || pwdRegister.length() < 6) {
                     Toast.makeText(RegisterActivity.this, "INVALID PASSWORD. Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
                     return;
                 }
 
+                // Validate that the passwords match.
                 if (!pwdRegister.equals(rePwdRegister)) {
                     Toast.makeText(RegisterActivity.this, "PASSWORDS DON'T MATCH", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                // Proceed with Firebase registration
+                // Register the user with Firebase Authentication.
                 auth.createUserWithEmailAndPassword(emailRegister, pwdRegister)
                         .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    // Registration successful, show a success dialog or navigate to the next activity
+                                    // Registration successful, show a welcome dialog or navigate to the next activity.
                                     showRegistrationAlertDialog();
                                 } else {
-                                    // Registration failed, check if it's due to email collision
+                                    // Handle registration errors.
                                     if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                        // Email already exists
+                                        // Email is already registered.
                                         Toast.makeText(RegisterActivity.this, "A user with this email already exists.", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        // Handle other registration errors
+                                        // Handle other registration errors.
                                         Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -78,16 +89,22 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        // Set up a click listener for navigating back to the main activity.
         TextView toMainButton = findViewById(R.id.regToMain);
         toMainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Navigate back to the intro activity.
                 Intent intent = new Intent(RegisterActivity.this, IntoActivity.class);
                 startActivity(intent);
             }
         });
     }
 
+    /**
+     * Displays an alert dialog welcoming the user after successful registration.
+     * Provides a button to navigate to the home activity.
+     */
     private void showRegistrationAlertDialog() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Welcome to SearchMyBench!");
@@ -95,12 +112,13 @@ public class RegisterActivity extends AppCompatActivity {
         adb.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                // Navigate to the home activity and finish this activity.
                 Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();
             }
         });
-        adb.setCancelable(false); // Prevent dialog from being dismissed on outside touch or back press
+        adb.setCancelable(false); // Prevent dialog from being dismissed by outside touch or back press.
         AlertDialog dialog = adb.create();
         dialog.show();
     }

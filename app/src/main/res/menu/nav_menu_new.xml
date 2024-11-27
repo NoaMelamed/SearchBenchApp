@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <item
+            android:id="@+id/nav_add_bench"
+            android:title="@string/add_a_new_bench"
+            android:icon="@drawable/ic_add_bench"
+            android:checkable="true" />
+        <item
+            android:id="@+id/nav_find_bench"
+            android:title="@string/find_a_bench"
+            android:icon="@drawable/ic_croissant_why_not"
+            android:checkable="true" />
+
+</menu>

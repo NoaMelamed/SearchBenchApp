@@ -9,7 +9,6 @@ import android.widget.TextView;
 import android.content.Intent;
 import android.widget.Toast;
 
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,28 +18,32 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
 
-    FirebaseAuth auth;
+    FirebaseAuth auth; // Firebase authentication instance
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
-        // מופע של המחלקה
+
+        // Initialize the FirebaseAuth instance
         auth = FirebaseAuth.getInstance();
 
+        // Set up the login button click listener
         Button loginButton = findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // Retrieve email and password entered by the user
                 EditText etEmailLogin = findViewById(R.id.et_email_login);
                 EditText etPasswordLogin = findViewById(R.id.et_password_login);
                 String emailLogin = etEmailLogin.getText().toString();
                 String passwordLogin = etPasswordLogin.getText().toString();
-                //
+
+                // Attempt to log in the user
                 loginClient(emailLogin, passwordLogin);
-            }});
+            }
+        });
 
-
-
-
+        // Set up the "Sign Up" text click listener to navigate to the registration page
         TextView toRegButton = findViewById(R.id.signToReg);
         toRegButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // Set up the "Back to Main" text click listener to navigate back to the intro activity
         TextView toMainButton = findViewById(R.id.signToMain);
         toMainButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,18 +62,27 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
+    /**
+     * Attempts to authenticate the user with the provided email and password.
+     * @param emailLogin The email entered by the user.
+     * @param passwordLogin The password entered by the user.
+     */
     private void loginClient(String emailLogin, String passwordLogin) {
         auth.signInWithEmailAndPassword(emailLogin, passwordLogin).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
             @Override
             public void onSuccess(AuthResult authResult) {
+                // If login is successful, show a welcome dialog
                 showLoginAlertDialog();
             }
         });
     }
 
+    /**
+     * Displays an alert dialog to welcome the user after a successful login.
+     * Provides an option to navigate to the home activity.
+     */
     private void showLoginAlertDialog() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Welcome to SearchMyBench!");
@@ -77,12 +90,13 @@ public class LoginActivity extends AppCompatActivity {
         adb.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                // Navigate to the home activity and finish the current activity
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();
             }
         });
-        adb.setCancelable(false); // Prevent dialog from being dismissed on outside touch or back press
+        adb.setCancelable(false); // Prevent dialog dismissal via outside touch or back button
         AlertDialog dialog = adb.create();
         dialog.show();
     }
