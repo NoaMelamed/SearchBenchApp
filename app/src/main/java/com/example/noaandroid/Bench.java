@@ -10,13 +10,14 @@ public class Bench {
     private Boolean quietStreet;
     private Boolean nearCafe;
     private String size;
-    private String imageUrl;
+    private String imageUri;
 
     // Empty constructor (for Firestore)
-    public Bench() {}
+    public Bench() {
+    }
 
     // Full constructor
-    public Bench(String name, GeoPoint location, Float rating, Boolean isShaded, Boolean quietStreet, Boolean nearCafe, String size, String imageUrl) {
+    public Bench(String name, GeoPoint location, Float rating, Boolean isShaded, Boolean quietStreet, Boolean nearCafe, String size, String imageUri) {
         this.name = name;
         this.location = location;
         this.rating = rating;
@@ -24,7 +25,12 @@ public class Bench {
         this.quietStreet = quietStreet;
         this.nearCafe = nearCafe;
         this.size = size;
-        this.imageUrl = imageUrl;
+        this.imageUri = imageUri;
     }
 
+
+    public void setImageUri (String imageUri)
+    {
+        this.imageUri = imageUri;
+    }
 }

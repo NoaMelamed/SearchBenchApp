@@ -6,6 +6,8 @@
     <string name="drawer_close">Close Drawer</string>
     <string name="add_a_new_bench">Add a new bench</string>
     <string name="find_a_bench">Find a bench</string>
+    <string name="image_preview">Image upload preview</string>
+    <string name="logo_for_header">logo-for-header</string>
     <string-array name="bench_size_options">
         <item>Single</item>
         <item>Regular</item>

@@ -63,13 +63,39 @@
                 android:layout_height="wrap_content"
                 android:entries="@array/bench_size_options"/>
 
+
+            <Button
+                android:id="@+id/btn_upload_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Image"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="#632240"
+                android:layout_gravity="center_horizontal" />
+
+            <Button
+                android:id="@+id/btn_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#632240"
+                android:text="Camera (full)"
+                android:layout_gravity="center_horizontal" />
+            
+            <ImageView
+                android:id="@+id/iv_photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
             <ImageView
                 android:id="@+id/image_preview"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:scaleType="centerCrop"
                 android:background="#DDD"
-                android:contentDescription="Image Preview"/>
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/image_preview"/>
 
             <!-- Submit button -->
             <Button

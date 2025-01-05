@@ -38,8 +38,11 @@ public class LoginActivity extends AppCompatActivity {
                 String emailLogin = etEmailLogin.getText().toString();
                 String passwordLogin = etPasswordLogin.getText().toString();
 
+                // for now - skip login
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                startActivity(intent);
                 // Attempt to log in the user
-                loginClient(emailLogin, passwordLogin);
+//                loginClient(emailLogin, passwordLogin);
             }
         });
 

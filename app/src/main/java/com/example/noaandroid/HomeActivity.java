@@ -95,7 +95,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         ImageView menuIcon = findViewById(R.id.menu_icon);
         menuIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
-
+        navigationView.bringToFront();
         // Setup navigation item selection
         navigationView.setNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.nav_add_bench) {
@@ -119,16 +119,25 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void showFilterFragment() {
         Fragment filterFragment = new BenchFiltersFragment();
 
-        // Begin a new fragment transaction to show the filter fragment
+        // Make the container visible
+        View fragmentContainer = findViewById(R.id.filterFragmentContainer);
+        fragmentContainer.setVisibility(View.VISIBLE);
+
+        // Add a click listener to dismiss the fragment when tapping outside
+        fragmentContainer.setOnTouchListener((v, event) -> {
+            getSupportFragmentManager().popBackStack(); // Removes the fragment from the back stack
+            v.setVisibility(View.GONE); // Hides the container
+            return true;
+        });
+
+        // Begin a fragment transaction to show the filter fragment
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-        transaction.add(R.id.filterFragmentContainer, filterFragment);
+        transaction.replace(R.id.filterFragmentContainer, filterFragment); // Replace to avoid overlap
         transaction.addToBackStack(null); // Allow back navigation
         transaction.commit();
-
-        // Make the fragment container visible
-        findViewById(R.id.filterFragmentContainer).setVisibility(View.VISIBLE);
     }
+
 
     /**
      * Called when the map is ready to be used.

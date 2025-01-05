@@ -36,25 +36,25 @@ public class IntoActivity extends AppCompatActivity {
             }
         });
 
-        // Create a countdown timer that runs for 5 seconds with 1-second intervals
-        CountDownTimer timer = new CountDownTimer(5000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                // Update the TextView with the remaining countdown time every second
-                TextView countdownTimerTextView = findViewById(R.id.tvCdt);
-                String stCountDown = millisUntilFinished / 1000 + "";
-                countdownTimerTextView.setText("Login in " + stCountDown + " seconds");
-            }
-
-            @Override
-            public void onFinish() {
-                // Automatically navigate to LoginActivity when the timer finishes
-                Intent intent = new Intent(IntoActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
-        };
-
-        // Start the countdown timer
-        timer.start();
+//        // Create a countdown timer that runs for 5 seconds with 1-second intervals
+//        CountDownTimer timer = new CountDownTimer(5000, 1000) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//                // Update the TextView with the remaining countdown time every second
+//                TextView countdownTimerTextView = findViewById(R.id.tvCdt);
+//                String stCountDown = millisUntilFinished / 1000 + "";
+//                countdownTimerTextView.setText("Login in " + stCountDown + " seconds");
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                // Automatically navigate to LoginActivity when the timer finishes
+//                Intent intent = new Intent(IntoActivity.this, LoginActivity.class);
+//                startActivity(intent);
+//            }
+//        };
+//
+//        // Start the countdown timer
+//        timer.start();
     }
 }
