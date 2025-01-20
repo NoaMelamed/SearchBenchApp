@@ -3,6 +3,7 @@ package com.example.noaandroid;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,11 +14,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BenchesListActivity extends AppCompatActivity {
+    private RecyclerView recyclerView;
+    private List<Bench> benches;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,14 +32,15 @@ public class BenchesListActivity extends AppCompatActivity {
 
                 initRecyclerView();
                 initNavigation();
+                loadBenchesFromFirestore();
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.benches_recycle_view);
+        recyclerView = findViewById(R.id.benches_recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        List<String> benchesList = createSampleData(); //TODO: replace w actual data
-        BenchesAdapter adapter = new BenchesAdapter(benchesList);
+        benches = new ArrayList<>();
+        BenchesAdapter adapter = new BenchesAdapter(benches);  // Use empty list initially
         recyclerView.setAdapter(adapter);
     }
 
@@ -64,12 +72,49 @@ public class BenchesListActivity extends AppCompatActivity {
         });
     }
 
-    private List<String> createSampleData() {
-        List<String> benchesList = new ArrayList<>();
-        benchesList.add("Bench 1:Near the lake");
-        benchesList.add("Bench 2:Under the big tree");
-        benchesList.add("Bench 3:Near the playground");
-        return benchesList;
+
+
+    private void loadBenchesFromFirestore() {
+        // Create a reference to Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Query the "benches" collection
+        db.collection("benches")
+                .get()  // Fetch all documents in the collection
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Bench> benches = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            // Map each Firestore document to a Bench object
+                            String benchName = document.getString("name");
+                            GeoPoint location = document.getGeoPoint("location");
+                            Float rating = document.getDouble("rating").floatValue();
+                            Boolean isShaded = document.getBoolean("isShaded");
+                            Boolean quietStreet = document.getBoolean("quietStreet");
+                            Boolean nearCafe = document.getBoolean("nearCafe");
+                            String size = document.getString("size");
+                            String imageUriString = document.getString("imageUri");
+
+                            // Create a new Bench object and add it to the list
+                            Bench bench = new Bench(benchName, location, rating, isShaded, quietStreet, nearCafe, size, imageUriString);
+                            benches.add(bench);
+                        }
+                        // Pass the benches list to the adapter to update the RecyclerView
+                        updateRecyclerView(benches);
+                    } else {
+                        Toast.makeText(this, "Error getting documents.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
+
+    private void updateRecyclerView (List<Bench> benches) {
+        // Create a new BenchAdapter with the list of benches
+        BenchesAdapter adapter = new BenchesAdapter(benches);
+
+        // Set the adapter to the RecyclerView
+        recyclerView.setAdapter(adapter);
+    }
+
 
 }

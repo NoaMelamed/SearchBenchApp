@@ -2,6 +2,9 @@ package com.example.noaandroid;
 
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Bench {
     private String name;
     private GeoPoint location;
@@ -28,9 +31,35 @@ public class Bench {
         this.imageUri = imageUri;
     }
 
+    public String getBenchName() {
+        return name;
+    }
+
+    public Float getRating() {
+        return rating;
+    }
+
+    public String getImageUri() {
+        return imageUri;
+    }
 
     public void setImageUri (String imageUri)
     {
         this.imageUri = imageUri;
     }
+
+    public static Map<String, Object> toHashMap(Bench bench) {
+        Map<String, Object> benchMap = new HashMap<>();
+        benchMap.put("name", bench.name);
+        benchMap.put("location", bench.location);
+        benchMap.put("rating", bench.rating);
+        benchMap.put("isShaded", bench.isShaded);
+        benchMap.put("quietStreet", bench.quietStreet);
+        benchMap.put("nearCafe", bench.nearCafe);
+        benchMap.put("size", bench.size);
+        benchMap.put("imageUri", bench.imageUri);
+        return benchMap;
+    }
 }
+
+

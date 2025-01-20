@@ -8,6 +8,10 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.app.Application;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
 
 public class IntoActivity extends AppCompatActivity {
 
@@ -15,6 +19,14 @@ public class IntoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
+
+        // Initialize Firebase
+        FirebaseApp.initializeApp(this);
+
+        // Initialize App Check with Play Integrity provider
+//        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+//        firebaseAppCheck.installAppCheckProviderFactory(
+//                PlayIntegrityAppCheckProviderFactory.getInstance());
 
         // Initialize the login button and set up a click listener
         Button loginButton = findViewById(R.id.loginButton);
@@ -36,25 +48,6 @@ public class IntoActivity extends AppCompatActivity {
             }
         });
 
-//        // Create a countdown timer that runs for 5 seconds with 1-second intervals
-//        CountDownTimer timer = new CountDownTimer(5000, 1000) {
-//            @Override
-//            public void onTick(long millisUntilFinished) {
-//                // Update the TextView with the remaining countdown time every second
-//                TextView countdownTimerTextView = findViewById(R.id.tvCdt);
-//                String stCountDown = millisUntilFinished / 1000 + "";
-//                countdownTimerTextView.setText("Login in " + stCountDown + " seconds");
-//            }
-//
-//            @Override
-//            public void onFinish() {
-//                // Automatically navigate to LoginActivity when the timer finishes
-//                Intent intent = new Intent(IntoActivity.this, LoginActivity.class);
-//                startActivity(intent);
-//            }
-//        };
-//
-//        // Start the countdown timer
-//        timer.start();
+
     }
 }

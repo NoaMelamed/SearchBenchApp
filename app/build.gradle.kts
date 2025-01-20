@@ -54,6 +54,10 @@ dependencies {
     implementation ("com.google.firebase:firebase-storage:21.0.1")
     implementation ("androidx.appcompat:appcompat:1.6.1")
     implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
+    implementation("com.google.firebase:firebase-storage")
 
 
 }

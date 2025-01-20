@@ -3,18 +3,22 @@ package com.example.noaandroid;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class BenchesAdapter extends RecyclerView.Adapter<BenchesAdapter.BenchesViewHolder> {
 
-    private final List<String> benchesList;
+    private final List<Bench> benchesList;
 
-    public BenchesAdapter(List<String> benchesList) {
+    public BenchesAdapter(List<Bench> benchesList) {
         this.benchesList = benchesList;
     }
 
@@ -27,13 +31,14 @@ public class BenchesAdapter extends RecyclerView.Adapter<BenchesAdapter.BenchesV
 
     @Override
     public void onBindViewHolder(@NonNull BenchesViewHolder holder, int position) {
-        String thisBench = benchesList.get(position);
-        // Assume `thisBench` is formatted as "Name:Description"
-        String[] parts = thisBench.split(":");
-        String name = parts.length > 0 ? parts[0] : "Unknown";
-        String desc = parts.length > 1 ? parts[1] : "No description";
-        holder.benchName.setText(name);
-        holder.benchDescription.setText(desc);
+        Bench bench = benchesList.get(position);
+        holder.benchName.setText(bench.getBenchName());
+        holder.ratingBar.setRating(bench.getRating());
+
+        Glide.with(holder.itemView.getContext())
+                .load(bench.getImageUri())
+                .into(holder.benchImage);
+
     }
 
     @Override
@@ -42,13 +47,17 @@ public class BenchesAdapter extends RecyclerView.Adapter<BenchesAdapter.BenchesV
     }
 
     public static class BenchesViewHolder extends RecyclerView.ViewHolder {
+        public RatingBar ratingBar;
         TextView benchName;
-        TextView benchDescription;
+        ImageView benchImage;
+
 
         public BenchesViewHolder(@NonNull View itemView) {
             super(itemView);
             benchName = itemView.findViewById(R.id.textBench);
-            benchDescription = itemView.findViewById(R.id.subTextBench);
+            ratingBar = itemView.findViewById(R.id.rating_bar);
+            benchImage = itemView.findViewById(R.id.image_preview);
+
         }
     }
 }
