@@ -23,10 +23,6 @@ public class IntoActivity extends AppCompatActivity {
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
 
-        // Initialize App Check with Play Integrity provider
-//        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
-//        firebaseAppCheck.installAppCheckProviderFactory(
-//                PlayIntegrityAppCheckProviderFactory.getInstance());
 
         // Initialize the login button and set up a click listener
         Button loginButton = findViewById(R.id.loginButton);

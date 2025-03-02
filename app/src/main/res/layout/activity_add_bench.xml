@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#632240"
-                android:text="Camera (full)"
+                android:text="Camera"
                 android:layout_gravity="center_horizontal" />
             
             <ImageView
@@ -88,14 +88,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/image_preview"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:scaleType="centerCrop"
-                android:background="#DDD"
-                android:layout_gravity="center_horizontal"
-                android:contentDescription="@string/image_preview"/>
+
 
             <!-- Submit button -->
             <Button
@@ -103,6 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#632240"
+                android:layout_marginTop="20dp"
                 android:text="Submit"/>
         </LinearLayout>
     </ScrollView>

@@ -44,6 +44,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+
+
 
 
 import java.io.ByteArrayOutputStream;
@@ -51,7 +54,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AddBenchActivity extends AppCompatActivity {
 
@@ -69,6 +74,7 @@ public class AddBenchActivity extends AppCompatActivity {
     private double lng = 0.0; // Dummy Longitude
     private FirebaseFirestore db;
     private FusedLocationProviderClient fusedLocationClient;
+    private List<Uri> selectedImages = new ArrayList<>(); // List to hold selected image URIs
 
 
     @Override
@@ -79,23 +85,22 @@ public class AddBenchActivity extends AppCompatActivity {
         initViews();
         initSpinner();
         initNavigation();
+        initListeners();
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         db = FirebaseFirestore.getInstance();
 
         // Set listeners
+
+
+    }
+
+    private void initListeners() {
         btnCamera.setOnClickListener(v -> openCamera());
         btnUploadImage.setOnClickListener(v -> openGallery());
         btnSubmit.setOnClickListener(v -> submitBench());
         btnSelectLocation.setOnClickListener(v -> selectLocation());
-
-        // Initialize Firebase
-//        FirebaseApp.initializeApp(this);
-        // Initialize App Check with Play Integrity provider
-//        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
-//        firebaseAppCheck.installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance());
     }
-
     private void openCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, CAMERA_REQUEST_CODE);
@@ -104,6 +109,7 @@ public class AddBenchActivity extends AppCompatActivity {
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(intent, GALLERY_REQUEST_CODE);
     }
 
@@ -156,87 +162,143 @@ public class AddBenchActivity extends AppCompatActivity {
             return;
         }
 
-        float rating = ratingBar.getRating(); // Float rating
-        boolean hasShade = cbShade.isChecked(); // Boolean for shade
-        boolean isQuietStreet = cbQuietStreet.isChecked(); // Boolean for quiet street
-        boolean isNearCafe = cbNearCafe.isChecked(); // Boolean for nearby cafe
-        String size = spinnerSize.getSelectedItem().toString(); // String for size
-
-        GeoPoint benchLocation = new GeoPoint(lat, lng);
-
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-
-        if (imageUri != null) {
-            // 1. Get a Firebase Storage reference
-            StorageReference storageRef = storage.getReference();
-            StorageReference imageRef = storageRef.child("/bench_images/" + System.currentTimeMillis() + ".jpg");
-
-            ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("Uploading bench...");
-            progressDialog.show();
-
-            // 2. Upload the image to Firebase Storage
-            imageRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot ->
-                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                // Get the download URL of the image
-                                String imageUrl = uri.toString();
-
-                                progressDialog.dismiss();
-                                Bench bench = new Bench(benchName, benchLocation, rating, hasShade, isQuietStreet, isNearCafe, size, imageUrl);
-                                Map<String, Object> benchMap = Bench.toHashMap(bench);
-                                uploadToFirestore(benchMap);
-                                Intent intent = new Intent(AddBenchActivity.this, HomeActivity.class);
-                                startActivity(intent);
-                            })
-                    )
-                    .addOnFailureListener(e -> {
-                        // Handle failure of the image upload
-                        Toast.makeText(this, "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
-
-                    });
+        // Validate the location
+        if (lat == 0.0 && lng == 0.0) {
+            Toast.makeText(this, "Please select a location.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
+        // Validate image selection
+        if (selectedImages.isEmpty()) {
+            Toast.makeText(this, "Please select at least one image.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Proceed to upload and store bench data
+        float rating = ratingBar.getRating();
+        boolean hasShade = cbShade.isChecked();
+        boolean isQuietStreet = cbQuietStreet.isChecked();
+        boolean isNearCafe = cbNearCafe.isChecked();
+        String size = spinnerSize.getSelectedItem().toString();
+        GeoPoint benchLocation = new GeoPoint(lat, lng);
+
+        // Create an ArrayList to hold the rating
+        List<Float> ratings = new ArrayList<>();
+        ratings.add(rating); // Add the current rating to the list
+
+        // Show progress dialog while uploading
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading bench...");
+        progressDialog.show();
+
+        // Upload images and create bench data
+        uploadImagesAndCreateBench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, rating);
+
+        // Dismiss the progress dialog and show success toast once the upload finishes
+        progressDialog.dismiss();
+        Toast.makeText(this, "Bench uploaded successfully", Toast.LENGTH_SHORT).show();
+
+        // Navigate to the home activity
+        Intent intent = new Intent(AddBenchActivity.this, HomeActivity.class);
+        startActivity(intent);
     }
 
 
-    private void uploadToFirestore(Map<String, Object> benchMap) {
 
-        // Add the Bench document to the "benches" collection in Firestore
+
+    private void uploadImagesAndCreateBench(String benchName, GeoPoint benchLocation, boolean hasShade, boolean isQuietStreet, boolean isNearCafe, String size, float rating) {
+        List<String> imageUrls = new ArrayList<>();
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading images...");
+        progressDialog.show();
+
+        uploadImagesToStorage(selectedImages, imageUrls, progressDialog, benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, rating);
+    }
+
+
+    private void uploadToFirestore(Map<String, Object> benchMap, Bench bench) {
         db.collection("benches")
                 .add(benchMap)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-//                        Log.d(TAG, "Bench added with ID: " + documentReference.getId());
-                    }
+                .addOnSuccessListener(documentReference -> {
+                    String benchDocId = documentReference.getId(); // Get Firestore-generated ID
+
+                    // Update the Firestore document with its own ID
+                    documentReference.update("benchId", benchDocId)
+                            .addOnSuccessListener(aVoid ->
+                                    Log.d("Firestore", "Bench ID successfully updated in Firestore")
+
+                            )
+                            .addOnFailureListener(e ->
+                                    Log.e("Firestore", "Failed to update Bench ID", e)
+                            );
+
+                    // update local items with firebase id
+                    benchMap.put("benchId", benchDocId);
+                    bench.setBenchId(benchDocId);
+
+
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                    }
-                });
+                .addOnFailureListener(e ->
+                        Log.e("Firestore", "Error adding bench", e)
+                );
     }
+
+
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == RESULT_OK) {
-            if (requestCode == CAMERA_REQUEST_CODE && data != null && data.getExtras() != null) {
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                ivPhoto.setImageBitmap(bitmap);
-
-                // Convert bitmap to URI (optional, if needed for Firebase Storage)
-                imageUri = getImageUri(bitmap);
-            } else if (requestCode == GALLERY_REQUEST_CODE && data != null) {
-                imageUri = data.getData();
-                imagePreview.setImageURI(imageUri);
+            if (requestCode == GALLERY_REQUEST_CODE && data != null) {
+                if (data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount();
+                    for (int i = 0; i < count; i++) {
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                        selectedImages.add(imageUri);
+                    }
+                } else {
+                    selectedImages.add(data.getData());
+                }
             }
         }
     }
+
+
+    private void uploadImagesToStorage(List<Uri> images, List<String> imageUrls, ProgressDialog progressDialog, String benchName, GeoPoint benchLocation, boolean hasShade, boolean isQuietStreet, boolean isNearCafe, String size, float rating) {
+        AtomicInteger index = new AtomicInteger(0);  // Use AtomicInteger for the index
+        for (Uri imageUri : images) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+            StorageReference imageRef = storageRef.child("bench_images/" + System.currentTimeMillis() + "_" + index.get() + ".jpg");
+
+            imageRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot ->
+                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                imageUrls.add(uri.toString());
+                                if (index.incrementAndGet() == images.size()) {
+                                    createAndUploadBench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, imageUrls, rating);
+                                    progressDialog.dismiss();
+                                }
+                            }))
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    });
+        }
+    }
+
+
+
+    private void createAndUploadBench(final String benchName, final GeoPoint benchLocation, final boolean hasShade, final boolean isQuietStreet, final boolean isNearCafe, final String size, final List<String> imageUrls, final float rating) {
+        List<Float> ratings = new ArrayList<>();
+        ratings.add(rating);
+        Bench bench = new Bench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, imageUrls, ratings, null); // averageRating is updated in setRating
+        Map<String, Object> benchMap = Bench.toHashMap(bench);
+        uploadToFirestore(benchMap, bench);
+    }
+
+
 
     private Uri getImageUri(Bitmap bitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -269,7 +331,6 @@ public class AddBenchActivity extends AppCompatActivity {
         btnUploadImage = findViewById(R.id.btn_upload_image);
         btnSubmit = findViewById(R.id.btn_submit);
         btnCamera = findViewById(R.id.btn_camera);
-        imagePreview = findViewById(R.id.image_preview);
         ivPhoto = findViewById(R.id.iv_photo);
     }
 
@@ -310,22 +371,7 @@ public class AddBenchActivity extends AppCompatActivity {
         });
     }
 
-//    private void uploadImageToFirebase(Uri imageUri, OnSuccessListener<String> onSuccessListener) {
-//        if (imageUri != null) {
-//            String fileName = "bench_images/" + System.currentTimeMillis() + ".jpg";
-//            FirebaseFirestore db = FirebaseFirestore.getInstance();
-//            FirebaseStorage.getInstance().getReference(fileName)
-//                    .putFile(imageUri)
-//                    .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl()
-//                            .addOnSuccessListener(uri -> {
-//                                String imageUrl = uri.toString();
-//                                onSuccessListener.onSuccess(imageUrl);
-//                            }))
-//                    .addOnFailureListener(e -> Toast.makeText(this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-//        } else {
-//            Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
-//        }
-//    }
+
 
 
 }

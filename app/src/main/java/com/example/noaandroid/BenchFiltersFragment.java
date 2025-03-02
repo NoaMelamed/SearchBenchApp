@@ -1,74 +1,101 @@
 package com.example.noaandroid;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Switch;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 /**
  * A Fragment that handles filters for benches.
  */
 public class BenchFiltersFragment extends Fragment {
 
-    // Keys for the arguments used to pass data into the fragment.
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // Parameters passed to the fragment during initialization.
-    private String mParam1;
-    private String mParam2;
-
-    /**
-     * Default constructor required for Fragment subclasses.
-     */
-    public BenchFiltersFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Factory method to create a new instance of this fragment
-     * using the provided parameters.
-     *
-     * @param param1 First parameter for the fragment.
-     * @param param2 Second parameter for the fragment.
-     * @return A new instance of BenchFiltersFragment.
-     */
-    public static BenchFiltersFragment newInstance(String param1, String param2) {
-        BenchFiltersFragment fragment = new BenchFiltersFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Retrieve the parameters passed to the fragment during its creation.
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
         View view = inflater.inflate(R.layout.fragment_bench_filters, container, false);
 
-        // Set up the "Apply Filters" button and its click listener.
-        Button applyFiltersButton = view.findViewById(R.id.applyFiltersButton);
-        applyFiltersButton.setOnClickListener(v -> {
-            // Logic to apply filters when the button is clicked.
-            // Note: This logic is currently not implemented.
-        });
+        // Initialize views and set up listeners
+        initViews(view);
 
         return view;
+    }
+
+    private void initViews(View view) {
+        // Initialize RadioGroup and RadioButtons for bench size
+        RadioGroup radioGroupBenchSize = view.findViewById(R.id.radioGroupBenchSize);
+        RadioButton radioSingleSeat = view.findViewById(R.id.radioSingleSeat);
+        RadioButton radioRegularSize = view.findViewById(R.id.radioRegularSize);
+
+        // Initialize Switches
+        Switch switchShade = view.findViewById(R.id.switchShade);
+        Switch switchQuietStreet = view.findViewById(R.id.switchQuietStreet);
+        Switch switchNearCafe = view.findViewById(R.id.switchNearCafe);
+        Switch switchShortDistance = view.findViewById(R.id.switchShortDistance);
+        Switch switchHighRated = view.findViewById(R.id.switchHighRated);
+
+        // Initialize Apply Filters button
+        Button applyFiltersButton = view.findViewById(R.id.applyFiltersButton);
+
+        // Set click listener for the Apply Filters button
+        applyFiltersButton.setOnClickListener(v -> {
+            // Save the selected filter options and pass them to the next activity
+            Intent intent = saveFilters(
+                    radioGroupBenchSize,
+                    switchShade,
+                    switchQuietStreet,
+                    switchNearCafe,
+                    switchShortDistance,
+                    switchHighRated
+            );
+
+            // Navigate to the BenchesListActivity
+            startActivity(intent);
+        });
+    }
+
+    private Intent saveFilters(RadioGroup radioGroupBenchSize, Switch switchShade, Switch switchQuietStreet,
+                               Switch switchNearCafe, Switch switchShortDistance, Switch switchHighRated) {
+        // Create an Intent to pass the filters to BenchesListActivity
+        Intent intent = new Intent(getActivity(), BenchesListActivity.class);
+
+        // Determine the selected bench size from the RadioGroup
+        String selectedSize = null;
+        int selectedId = radioGroupBenchSize.getCheckedRadioButtonId();
+        if (selectedId == R.id.radioSingleSeat) {
+            selectedSize = "Single Seat";
+        } else if (selectedId == R.id.radioRegularSize) {
+            selectedSize = "Regular Size";
+        }
+     else {
+        selectedSize = ""; // Set an empty string if no size is selected
+    }
+
+        // Retrieve values from the switches
+        boolean inShade = switchShade.isChecked();
+        boolean quietStreet = switchQuietStreet.isChecked();
+        boolean nearCafe = switchNearCafe.isChecked();
+        boolean shortDistance = switchShortDistance.isChecked();
+        boolean highRated = switchHighRated.isChecked();
+
+        // Add all filter values to the Intent
+        intent.putExtra("size", selectedSize);
+        intent.putExtra("inShade", inShade);
+        intent.putExtra("quietStreet", quietStreet);
+        intent.putExtra("nearCafe", nearCafe);
+        intent.putExtra("shortDistance", shortDistance);
+        intent.putExtra("highRated", highRated);
+
+        return intent;
     }
 }
