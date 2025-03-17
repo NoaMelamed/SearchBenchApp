@@ -48,6 +48,8 @@ public class BenchesListActivity extends AppCompatActivity {
     private BenchesAdapter adapter;
     private FusedLocationProviderClient fusedLocationClient;
     private final int FINE_PERMISSION_CODE = 1;
+    private static final int REQUEST_CODE = 1001; // You can change the number if needed
+
     private static final double DEFAULT_LATITUDE = 32.0767; // Slightly off-center Tel Aviv
     private static final double DEFAULT_LONGITUDE = 34.7778;
     private double userLatitude;
@@ -107,20 +109,28 @@ public class BenchesListActivity extends AppCompatActivity {
     }
 
 
-    private void fetchAllFields() { //Call this in onCreate
+    private void fetchAllFields() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("benches").limit(1).get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && !task.getResult().isEmpty()) {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                Map<String, Object> allFields = new HashMap<>(document.getData());
-                fetchFilteredBenches(retrieveFilters(), allFields); //Call fetchFilteredBenches AFTER retrieving allFields
+
+                // Explicitly create a HashMap to prevent type confusion
+                Map<String, Object> allFields = new HashMap<>();
+                if (document.getData() != null) {
+                    allFields.putAll(document.getData()); // Copy data safely
+                }
+
+                // Pass a Runnable instead of a Map
+                onRequestPermission(() -> fetchFilteredBenches(retrieveFilters(), allFields));
+
             } else {
-                // Handle errors appropriately. Show a message or use default values.
                 Log.e("Firestore", "Error fetching fields", task.getException());
                 showNoResultsMessage("Error fetching initial data. Please try again later.");
             }
         });
     }
+
 
     private Map<String, Object> retrieveFilters() { // only selected ones
         Intent intent = getIntent();
@@ -151,41 +161,53 @@ public class BenchesListActivity extends AppCompatActivity {
     private void fetchFilteredBenches(Map<String, Object> userFilters, Map<String, Object> allFields) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference benchesRef = db.collection("benches");
-        Query query = benchesRef;
-
-        // Apply filters based on user selections and all possible fields
-        query = applyFilters(query, userFilters, allFields);
-        Log.d("DEBUG", "Executing Firestore Query with filters: " + userFilters.toString()); // 🔥 Log query execution
-
+        Query query = applyFilters(benchesRef, userFilters, allFields);
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<Bench> benches = task.getResult().toObjects(Bench.class);
-                Log.d("DEBUG", "Fetched " + benches.size() + " benches from Firestore"); // 🔥 Log number of results
+                Log.d("DEBUG", "Fetched " + benches.size() + " benches before distance filtering");
 
-                updateRecyclerView(benches); // No client-side filtering needed anymore
+                // Apply distance filtering if shortDistance is selected
+                if (Boolean.TRUE.equals(userFilters.get("shortDistance"))) {
+                    GeoPoint userLocation = new GeoPoint(userLatitude, userLongitude);
+                    benches = filterByDistance(benches, userLocation, 500); // Filter benches within 500m
+                }
+
+                Log.d("DEBUG", "Benches after distance filtering: " + benches.size());
+                updateRecyclerView(benches);
             } else {
                 Log.e("Firestore", "Error fetching benches", task.getException());
-                showNoResultsMessage("Error fetching benches. Please try again later.");
+                showNoResultsMessage("No matching benches found.");
             }
         });
     }
 
     private Query applyFilters(Query query, Map<String, Object> userFilters, Map<String, Object> allFields) {
+        Log.d("DEBUG", "applyFilters called with userFilters: " + userFilters.toString());
 
         for (Map.Entry<String, Object> entry : allFields.entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = userFilters.get(fieldName); // Get filter value from userFilters
 
+            Log.d("DEBUG", "Checking field: " + fieldName + ", Value: " + fieldValue);
+
             if (fieldValue != null) {
+                Log.d("DEBUG", "Applying filter for field: " + fieldName);
                 query = applyUserFilter(query, fieldName, fieldValue);
             }
         }
+
+        if (Boolean.TRUE.equals(userFilters.get("highRated"))) {
+            Log.d("DEBUG", "Manually applying highRated filter (averageRating >= 4.0)");
+            query = query.whereGreaterThanOrEqualTo("averageRating", 4.0);
+        }
+
         return query;
     }
 
     private Query applyUserFilter(Query query, String fieldName, Object filterValue) {
-        Log.d("DEBUG", "Applying filter: " + fieldName + " = " + filterValue); // 🔥 Log each filter being applied
+        Log.d("DEBUG", "Applying filter: " + fieldName + " = " + filterValue);
 
         if (filterValue instanceof Boolean) {
             return query.whereEqualTo(fieldName, filterValue);
@@ -273,16 +295,11 @@ public class BenchesListActivity extends AppCompatActivity {
             }
         }
     }
-
-    private void getLastLocation(Map<String, Object> filters) {
-        Log.w("DEBUG", "Location permission not granted, requesting permission..."); // 🔥 Log permission request
-
+    private void getLastLocation(Runnable callback) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
             return;
         }
-
-        Log.d("DEBUG", "Requesting last known location..."); // 🔥 Log location request start
 
         fusedLocationClient.getLastLocation()
                 .addOnCompleteListener(task -> {
@@ -290,25 +307,27 @@ public class BenchesListActivity extends AppCompatActivity {
                         currentLocation = task.getResult();
                         userLatitude = currentLocation.getLatitude();
                         userLongitude = currentLocation.getLongitude();
-//                        fetchFilteredBenches(filters);
+                        Log.d("DEBUG", "User location retrieved: " + userLatitude + ", " + userLongitude);
                     } else {
                         Log.w("Location", "Failed to get location", task.getException());
                         userLatitude = DEFAULT_LATITUDE;
                         userLongitude = DEFAULT_LONGITUDE;
-//                        fetchFilteredBenches(filters);
                     }
+                    callback.run(); // Execute callback function
                 });
     }
+
 
     private List<Bench> filterByDistance(List<Bench> benches, GeoPoint userLocation, double radius) {
         List<Bench> nearbyBenches = new ArrayList<>();
         for (Bench bench : benches) {
-            if (getDistanceBetween(userLocation, bench.getLocation()) <= radius) {
+            if (bench.getLocation() != null && getDistanceBetween(userLocation, bench.getLocation()) <= radius) {
                 nearbyBenches.add(bench);
             }
         }
         return nearbyBenches;
     }
+
 
     private double getDistanceBetween(GeoPoint loc1, GeoPoint loc2) {
         double earthRadius = 6371; // Radius of the earth in km
@@ -324,14 +343,13 @@ public class BenchesListActivity extends AppCompatActivity {
         return distanceInKilometers * 1000; // Convert to meters
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == FINE_PERMISSION_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Map<String, Object> filters = retrieveFilters();
-            getLastLocation(filters);
+    private void onRequestPermission(Runnable actionIfGranted) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            actionIfGranted.run(); // This expects a Runnable
         } else {
-            showNoResultsMessage("Location permission denied.");
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
         }
     }
+
 }

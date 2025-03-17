@@ -25,6 +25,9 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
  */
 public class RegisterActivity extends AppCompatActivity {
 
+    // Initialize Firebase Authentication instance.
+    FirebaseAuth auth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,58 +37,12 @@ public class RegisterActivity extends AppCompatActivity {
         Button registerButton = findViewById(R.id.register_button);
 
         // Initialize Firebase Authentication instance.
-        FirebaseAuth auth;
         auth = FirebaseAuth.getInstance();
 
         // Set up the click listener for the register button.
         registerButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Get user inputs from the form.
-                EditText etEmailRegister = findViewById(R.id.et_email_register);
-                EditText etNameRegister = findViewById(R.id.et_name_register);
-                EditText etPwdRegister = findViewById(R.id.et_password_register);
-                EditText etRePwdRegister = findViewById(R.id.et_rePassword_register);
-                EditText etPhoneRegister = findViewById(R.id.et_phone_register);
-
-                // Retrieve text input from EditText fields.
-                String nameRegister = etNameRegister.getText().toString();
-                String pwdRegister = etPwdRegister.getText().toString();
-                String rePwdRegister = etRePwdRegister.getText().toString();
-                String phoneRegister = etPhoneRegister.getText().toString();
-                String emailRegister = etEmailRegister.getText().toString();
-
-                // Validate password: check if it's at least 6 characters long.
-                if (pwdRegister.isEmpty() || pwdRegister.length() < 6) {
-                    Toast.makeText(RegisterActivity.this, "INVALID PASSWORD. Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                // Validate that the passwords match.
-                if (!pwdRegister.equals(rePwdRegister)) {
-                    Toast.makeText(RegisterActivity.this, "PASSWORDS DON'T MATCH", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                // Register the user with Firebase Authentication.
-                auth.createUserWithEmailAndPassword(emailRegister, pwdRegister)
-                        .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Registration successful, show a welcome dialog or navigate to the next activity.
-                                    showRegistrationAlertDialog();
-                                } else {
-                                    // Handle registration errors.
-                                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                        // Email is already registered.
-                                        Toast.makeText(RegisterActivity.this, "A user with this email already exists.", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        // Handle other registration errors.
-                                        Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }
-                        });
+                registerUser();
             }
         });
 
@@ -99,6 +56,64 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // Set up a click listener for navigating to the sign-in activity.
+        TextView toSignInButton = findViewById(R.id.tv_signin);
+        toSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to the sign-in activity.
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void registerUser() {
+        // Get user inputs from the form.
+        EditText etEmailRegister = findViewById(R.id.et_email_register);
+        EditText etNameRegister = findViewById(R.id.et_name_register);
+        EditText etPwdRegister = findViewById(R.id.et_password_register);
+        EditText etRePwdRegister = findViewById(R.id.et_rePassword_register);
+
+        // Retrieve text input from EditText fields.
+        String nameRegister = etNameRegister.getText().toString();
+        String pwdRegister = etPwdRegister.getText().toString();
+        String rePwdRegister = etRePwdRegister.getText().toString();
+        String emailRegister = etEmailRegister.getText().toString();
+
+        // Validate password: check if it's at least 6 characters long.
+        if (pwdRegister.isEmpty() || pwdRegister.length() < 6) {
+            Toast.makeText(RegisterActivity.this, "INVALID PASSWORD. Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Validate that the passwords match.
+        if (!pwdRegister.equals(rePwdRegister)) {
+            Toast.makeText(RegisterActivity.this, "PASSWORDS DON'T MATCH", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Register the user with Firebase Authentication.
+        auth.createUserWithEmailAndPassword(emailRegister, pwdRegister)
+                .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Registration successful, show a welcome dialog or navigate to the next activity.
+                            showRegistrationAlertDialog();
+                        } else {
+                            // Handle registration errors.
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                // Email is already registered.
+                                Toast.makeText(RegisterActivity.this, "A user with this email already exists.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Handle other registration errors.
+                                Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
     }
 
     /**

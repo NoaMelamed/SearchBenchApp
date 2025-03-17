@@ -1,110 +1,254 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="700dp"
     android:layout_gravity="center"
     android:elevation="8dp"
-    android:background="#d8e4bc"
+    android:background="#FFFFFF"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:backgroundTint="#ECEFF1">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose Filters"
-        android:textSize="18sp"
-        android:textColor="#632240" />
-
-    <!-- Size -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Size preferences:"
+        android:text="What kind of bench are you looking for?"
+        android:textSize="24sp"
+        android:textColor="#37474F"
         android:textStyle="bold"
+        android:fontFamily="@font/outfit_regular"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Size Preferences -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Size preferences"
+        android:textStyle="bold"
+        android:textSize="18sp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp" />
+        android:textColor="#37474F"
+        android:fontFamily="@font/outfit_regular" />
 
     <RadioGroup
         android:id="@+id/radioGroupBenchSize"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/radioSingleSeat"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Single Seat" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <RadioButton
-            android:id="@+id/radioRegularSize"
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Single seat"
+                android:textColor="#37474F"
+                android:fontFamily="@font/outfit_regular"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/radioSingleSeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#37474F"
+                android:fontFamily="@font/outfit_regular"
+                android:buttonTint="#37474F" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Regular Size" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Regular size"
+                android:textColor="#37474F"
+                android:fontFamily="@font/outfit_regular"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/radioRegularSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#37474F"
+                android:fontFamily="@font/outfit_regular"
+                android:buttonTint="#37474F" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Picnic bench"
+                android:textColor="#37474F"
+                android:fontFamily="@font/outfit_regular"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/radioPicnicSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#37474F"
+                android:fontFamily="@font/outfit_regular"
+                android:buttonTint="#37474F" />
+        </LinearLayout>
     </RadioGroup>
 
-    <!-- Shade -->
+    <!-- Street Preferences -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Shade:"
+        android:text="Street preferences"
         android:textStyle="bold"
+        android:textSize="18sp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp" />
+        android:textColor="#37474F"
+        android:fontFamily="@font/outfit_regular" />
 
-    <Switch
-        android:id="@+id/switchShade"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="In the Shade" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <!-- Street -->
-    <TextView
-        android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Quiet Street"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/switchQuietStreet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Street preferences:"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <Switch
-        android:id="@+id/switchQuietStreet"
-        android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Near a coffeeshop"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/switchNearCafe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Quiet Street" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <Switch
-        android:id="@+id/switchNearCafe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Near a coffeeshop" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="In the Shade"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular"
+            android:layout_weight="1" />
 
-    <!-- Distance -->
+        <Switch
+            android:id="@+id/switchShade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular" />
+    </LinearLayout>
+
+    <!-- General Preferences -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="General"
         android:textStyle="bold"
+        android:textSize="18sp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp" />
+        android:textColor="#37474F"
+        android:fontFamily="@font/outfit_regular" />
 
-    <Switch
-        android:id="@+id/switchShortDistance"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1km or under" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <Switch
-        android:id="@+id/switchHighRated"
-        android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="1km or under"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/switchShortDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Rated 4+" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Rated 4+"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/switchHighRated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/applyFiltersButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="#37474F"
+        android:textColor="#ECEFF1"
         android:text="Apply"
-        android:backgroundTint="#632240"
-        android:textColor="#FFFFFF" />
+        android:fontFamily="@font/outfit_regular"
+        android:elevation="4dp"
+         />
 </LinearLayout>

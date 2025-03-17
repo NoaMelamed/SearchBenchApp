@@ -9,95 +9,186 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#d8e4bc">
+        android:background="#ECEFF1">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
+            <!-- Toolbar -->
             <include layout="@layout/toolbar"/>
 
+            <!-- Bench Name EditText -->
             <EditText
                 android:id="@+id/et_bench_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="90dp"
-                android:hint="Bench Name"/>
+                android:layout_height="48dp"
+                android:hint="Bench Name"
+                android:textColor="#37474F"
+                android:textColorHint="#90A4AE"
+                android:inputType="text"
+                android:layout_marginTop="30dp"
+                android:layout_marginHorizontal="25dp"
+                android:background="#FFFFFF"
+                android:fontFamily="@font/outfit_regular"/>
 
+            <!-- Select Location Button -->
             <Button
                 android:id="@+id/btn_select_location"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#632240"
-                android:text="Select Location"/>
+                android:layout_height="48dp"
+                android:backgroundTint="#37474F"
+                android:text="Select my location"
+                android:textColor="#ECEFF1"
+                android:layout_marginTop="16dp"
+                android:padding="5dp"
+                android:textSize="16sp"
+                android:layout_marginHorizontal="10dp"
 
+                android:fontFamily="@font/outfit_regular"/>
+
+            <!-- Rating Bar -->
             <RatingBar
                 android:id="@+id/rating_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:numStars="5"
-                android:stepSize="1.0"/>
+                android:stepSize="1.0"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal"/>
 
+            <!-- Bench Filters Text -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bench Filters"
+                android:textColor="#37474F"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/outfit_regular"
+                android:textSize="19sp"/>
+
+            <!-- Checkboxes -->
             <CheckBox
                 android:id="@+id/cb_shade"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Under Shade"/>
+                android:text="Under shade"
+                android:textColor="#37474F"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="16dp"
+                android:fontFamily="@font/outfit_regular"/>
 
             <CheckBox
                 android:id="@+id/cb_quiet_street"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Quiet Street"/>
+                android:text="On a quiet Street"
+                android:textColor="#37474F"
+                android:layout_marginHorizontal="16dp"
+                android:fontFamily="@font/outfit_regular"/>
 
             <CheckBox
                 android:id="@+id/cb_near_cafe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Near Cafe"/>
+                android:text="Near a Cafe"
+                android:textColor="#37474F"
+                android:layout_marginHorizontal="16dp"
+                android:fontFamily="@font/outfit_regular"/>
 
+            <!-- Spinner Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Bench Size"
+                android:textColor="#37474F"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/outfit_regular"
+                android:textSize="19sp"/>
+
+            <!-- Spinner for Bench Size -->
             <Spinner
                 android:id="@+id/sp_size"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/bench_size_options"/>
+                android:layout_height="48dp"
+                android:entries="@array/bench_size_options"
+                android:layout_marginTop="8dp"
+                android:background="#FFFFFF"
+                android:layout_marginHorizontal="15dp"
+                android:textColor="#37474F"/>
 
-
-            <Button
-                android:id="@+id/btn_upload_image"
+            <!-- Photo Buttons Title -->
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upload Image"
+                android:text="Select Photos"
+                android:textColor="#37474F"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:backgroundTint="#632240"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/outfit_regular"
+                android:textSize="19sp"/>
 
-            <Button
-                android:id="@+id/btn_camera"
-                android:layout_width="wrap_content"
+            <!-- Photo Buttons (Upload Image and Camera) -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#632240"
-                android:text="Camera"
-                android:layout_gravity="center_horizontal" />
-            
+                android:layout_marginTop="8dp"
+                android:gravity="center">
+
+                <!-- Upload Image Button -->
+                <Button
+                    android:id="@+id/btn_upload_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:text="Gallery"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="#37474F"
+                    android:textColor="#ECEFF1"
+                    android:padding="6dp"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/outfit_regular"/>
+
+                <!-- Camera Button -->
+                <Button
+                    android:id="@+id/btn_camera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:text="Camera"
+                    android:backgroundTint="#37474F"
+                    android:textColor="#ECEFF1"
+                    android:padding="6dp"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/outfit_regular"/>
+            </LinearLayout>
+
+            <!-- Image View for Selected Photo -->
             <ImageView
                 android:id="@+id/iv_photo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"/>
 
-
-
-            <!-- Submit button -->
+            <!-- Submit Button -->
             <Button
                 android:id="@+id/btn_submit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#632240"
-                android:layout_marginTop="20dp"
-                android:text="Submit"/>
+                android:layout_height="48dp"
+                android:text="Submit"
+                android:backgroundTint="#37474F"
+                android:textColor="#ECEFF1"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="50dp"
+                android:layout_marginHorizontal="10dp"
+                android:textSize="16sp"
+                android:fontFamily="@font/outfit_regular"/>
+
         </LinearLayout>
     </ScrollView>
 

@@ -15,7 +15,9 @@
         android:layout_height="wrap_content"
         android:text="Close"
         android:layout_gravity="end"
-        android:layout_margin="8dp"/>
+        android:backgroundTint="#37474F"
+        android:layout_margin="8dp"
+        android:fontFamily="@font/outfit_regular"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

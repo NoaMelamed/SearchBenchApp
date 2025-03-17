@@ -39,10 +39,10 @@ public class LoginActivity extends AppCompatActivity {
                 String passwordLogin = etPasswordLogin.getText().toString();
 
                 // for now - skip login
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+//                startActivity(intent);
                 // Attempt to log in the user
-//                loginClient(emailLogin, passwordLogin);
+                loginClient(emailLogin, passwordLogin);
             }
         });
 
@@ -78,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(AuthResult authResult) {
                 // If login is successful, show a welcome dialog
                 showLoginAlertDialog();
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             }
         });
     }

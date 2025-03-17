@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="8dp">
+    android:padding="8dp"
+    >
 
     <ImageView
         android:id="@+id/benchImage"
         android:layout_width="120dp"
         android:layout_height="90dp"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/new_logo_icon_only"
+        android:src="@drawable/vintage_bench_tayelet_omg"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
@@ -25,54 +26,40 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_weight="1"> <!-- Helps distribute space properly -->
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/textBench"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Text"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular" />
 
-
-
-
-
-        <!--
-
-    <TextView
-        android:id="@+id/subTextBench"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Subtext"
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray" />
-        -->
-
-    <RatingBar
-        android:id="@+id/rating_bar"
-        style="?android:attr/ratingBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
-        android:max="5"
-        android:numStars="5"
-        android:rating="0.0"
-        android:stepSize="0.0"
-        />
+        <RatingBar
+            android:id="@+id/rating_bar"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:max="5"
+            android:numStars="5"
+            android:rating="0.0"
+            android:stepSize="0.1"
+            android:progressTint="#37474F" />
 
         <TextView
             android:id="@+id/tv_open_bench_activity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="bench details"
+            android:text="Bench details"
             android:clickable="true"
             android:textStyle="bold"
-
-            />
-
-</LinearLayout>
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

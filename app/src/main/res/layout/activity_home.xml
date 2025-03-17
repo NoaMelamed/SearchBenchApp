@@ -15,46 +15,74 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu_new" />
+        app:menu="@menu/nav_menu_new"
+        />
 
     <!-- Main Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="#d8e4bc">
+        android:background="#ECEFF1"
+        >
 
         <include layout="@layout/toolbar" />
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/titleTextView"
-            android:layout_width="wrap_content"
+        <!-- Title and Filter By Text -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Benches Near Me"
-            android:textColor="#632240"
-            android:textSize="24sp"
-            android:layout_marginTop="10dp"
-            android:fontFamily="sans-serif-medium"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="8dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="20dp">
 
-        <!-- Filter By Text -->
-        <TextView
-            android:id="@+id/filterByTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Filter By"
-            android:textColor="#632240"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-medium"
-            android:background="#ffffff"
-            android:padding="8dp"
-            android:layout_gravity="end"
-            android:elevation="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_marginBottom="8dp" />
+            <LinearLayout
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Benches Near Me"
+                android:textStyle="bold"
+                android:textColor="#37474F"
+                android:textSize="24sp"
+                android:fontFamily="@font/outfit_regular" />
+
+                <TextView
+                    android:id="@+id/subtitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Choose from the map or use filters for preferences"
+                    android:textColor="#37474F"
+                    android:textSize="16sp"
+                    android:textAlignment="textStart"
+                    android:fontFamily="@font/outfit_regular"
+                    android:layout_marginTop="8dp"
+                    />
+
+            </LinearLayout>
+
+            <!-- Filter By Text -->
+            <TextView
+                android:id="@+id/filterByTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filter By"
+                android:textColor="#37474F"
+                android:textSize="18sp"
+                android:layout_marginStart="30dp"
+                android:fontFamily="@font/outfit_regular"
+                android:background="#ffffff"
+                android:padding="8dp"
+                android:elevation="3dp"
+                android:clickable="true"
+                android:focusable="true" />
+        </LinearLayout>
 
         <!-- Map Fragment -->
         <fragment
@@ -63,7 +91,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:layout_marginHorizontal="15dp"/>
 
         <!-- Find Me a Bench Button -->
         <Button
@@ -71,10 +100,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Find Me a Bench"
-            android:textColor="#ffffff"
-            android:backgroundTint="#632240"
-            android:fontFamily="sans-serif-medium"
-            android:layout_marginTop="16dp" />
+            android:textColor="#ECEFF1"
+            android:backgroundTint="#37474F"
+            android:fontFamily="@font/outfit_regular"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp" />
     </LinearLayout>
 
     <!-- Container for the Filter Fragment (overlay) -->

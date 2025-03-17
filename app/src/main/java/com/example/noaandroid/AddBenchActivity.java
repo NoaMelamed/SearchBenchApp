@@ -139,7 +139,7 @@ public class AddBenchActivity extends AppCompatActivity {
                         lng = location.getLongitude();
 
                         // Update the button text to reflect the selected location
-                        btnSelectLocation.setText("Location Selected: Lat " + lat + ", Lng " + lng);
+                        btnSelectLocation.setText("Location Selected:");
 
                         // Optionally, enable other actions or save the location for submission
                         btnSubmit.setEnabled(true); // Enable the submit button
@@ -185,6 +185,7 @@ public class AddBenchActivity extends AppCompatActivity {
         // Create an ArrayList to hold the rating
         List<Float> ratings = new ArrayList<>();
         ratings.add(rating); // Add the current rating to the list
+        double averageRating = rating; // Initialize averageRating with the first rating
 
         // Show progress dialog while uploading
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -192,7 +193,7 @@ public class AddBenchActivity extends AppCompatActivity {
         progressDialog.show();
 
         // Upload images and create bench data
-        uploadImagesAndCreateBench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, rating);
+        uploadImagesAndCreateBench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, rating, averageRating);
 
         // Dismiss the progress dialog and show success toast once the upload finishes
         progressDialog.dismiss();
@@ -206,13 +207,13 @@ public class AddBenchActivity extends AppCompatActivity {
 
 
 
-    private void uploadImagesAndCreateBench(String benchName, GeoPoint benchLocation, boolean hasShade, boolean isQuietStreet, boolean isNearCafe, String size, float rating) {
+    private void uploadImagesAndCreateBench(String benchName, GeoPoint benchLocation, boolean hasShade, boolean isQuietStreet, boolean isNearCafe, String size, float rating, double averageRating) {
         List<String> imageUrls = new ArrayList<>();
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading images...");
         progressDialog.show();
 
-        uploadImagesToStorage(selectedImages, imageUrls, progressDialog, benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, rating);
+        uploadImagesToStorage(selectedImages, imageUrls, progressDialog, benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, rating, averageRating);
     }
 
 
@@ -250,22 +251,18 @@ public class AddBenchActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode == GALLERY_REQUEST_CODE && data != null) {
-                if (data.getClipData() != null) {
-                    int count = data.getClipData().getItemCount();
-                    for (int i = 0; i < count; i++) {
-                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                        selectedImages.add(imageUri);
-                    }
-                } else {
-                    selectedImages.add(data.getData());
-                }
+            if (requestCode == CAMERA_REQUEST_CODE && data != null) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                ivPhoto.setImageBitmap(photo); // Display image
+                imageUri = getImageUri(photo); // Convert to URI
+                selectedImages.add(imageUri);
             }
         }
     }
 
 
-    private void uploadImagesToStorage(List<Uri> images, List<String> imageUrls, ProgressDialog progressDialog, String benchName, GeoPoint benchLocation, boolean hasShade, boolean isQuietStreet, boolean isNearCafe, String size, float rating) {
+
+    private void uploadImagesToStorage(List<Uri> images, List<String> imageUrls, ProgressDialog progressDialog, String benchName, GeoPoint benchLocation, boolean hasShade, boolean isQuietStreet, boolean isNearCafe, String size, float rating, double averageRating) {
         AtomicInteger index = new AtomicInteger(0);  // Use AtomicInteger for the index
         for (Uri imageUri : images) {
             FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -306,6 +303,7 @@ public class AddBenchActivity extends AppCompatActivity {
         String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "BenchImage", null);
         return Uri.parse(path);
     }
+
 
 
     // Helper method to check if a file URI is valid

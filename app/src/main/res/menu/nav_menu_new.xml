@@ -9,7 +9,7 @@
         <item
             android:id="@+id/nav_find_bench"
             android:title="@string/find_a_bench"
-            android:icon="@drawable/ic_croissant_why_not"
+            android:icon="@drawable/ic_location"
             android:checkable="true" />
 
 </menu>

@@ -3,72 +3,120 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#d8e4bc"
+    android:orientation="vertical"
+    android:background="#ECEFF1"
+    android:padding="16dp">
 
-    android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="140dp"
-        android:layout_height="90dp"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="15dp"
-        app:srcCompat="@drawable/new_logo_text_only" />
-
-    <EditText
-        android:id="@+id/et_email_login"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="190dp"
-        android:layout_marginRight="10dp"
-        android:hint="Please enter your Email"
-        android:inputType="textEmailAddress" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="bottom|center_horizontal">
 
-    <EditText
-        android:id="@+id/et_password_login"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:hint="Please enter your password"
-        android:inputType="textPassword" />
+        <TextView
+            android:id="@+id/tv_welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome back!"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#37474F"
+            android:gravity="center"
+            android:fontFamily="@font/outfit_regular"/>
 
-    <Button
-        android:id="@+id/login_button"
+        <TextView
+            android:id="@+id/tv_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Enter your details to sign in to your account"
+            android:textSize="14sp"
+            android:textColor="#37474F"
+            android:gravity="center"
+            android:fontFamily="@font/outfit_regular"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:backgroundTint="#632240"
-        android:textColor="#d8e4bc"
-        android:textStyle="bold"
-        android:text="Login" />
+        android:orientation="vertical"
+        android:gravity="bottom">
 
-    <TextView
-        android:id="@+id/signToReg"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="100dp"
-        android:textSize="16dp"
-        android:gravity="center"
-        android:clickable="true"
-        android:textStyle="bold"
-        android:textColor="#632240"
-        android:text="Don't have an account? Register here" />
+        <EditText
+            android:id="@+id/et_email_login"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:hint="Enter your Email"
+            android:inputType="textEmailAddress"
+            android:padding="8dp"
+            android:background="#FFFFFF"
+            android:textColor="#37474F"
+            android:textColorHint="#90A4AE"
+            android:fontFamily="@font/outfit_regular"/>
 
+        <EditText
+            android:id="@+id/et_password_login"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:hint="Enter your Password"
+            android:inputType="textPassword"
+            android:padding="8dp"
+            android:background="#FFFFFF"
+            android:textColor="#37474F"
+            android:textColorHint="#90A4AE"
+            android:fontFamily="@font/outfit_regular"/>
 
-    <TextView
-        android:id="@+id/signToMain"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="160dp"
-        android:textSize="12dp"
-        android:gravity="center"
-        android:clickable="true"
-        android:textStyle="bold"
-        android:textColor="#632240"
-        android:text="Back" />
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#37474F"
+            android:textColor="#ECEFF1"
+            android:textStyle="bold"
+            android:text="Login"
+            android:fontFamily="@font/outfit_regular"/>
 
+        <TextView
+            android:id="@+id/tv_divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="OR"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="#37474F"
+            android:fontFamily="@font/outfit_regular"/>
+
+        <TextView
+            android:id="@+id/signToReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:clickable="true"
+            android:textStyle="bold"
+            android:textColor="#37474F"
+            android:text="Don't have an account? Register here"
+            android:fontFamily="@font/outfit_regular"/>
+
+        <TextView
+            android:id="@+id/signToMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="45dp"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:clickable="true"
+            android:textStyle="bold"
+            android:textColor="#37474F"
+            android:text="Back"
+            android:fontFamily="@font/outfit_regular"/>
+    </LinearLayout>
 
 </LinearLayout>

@@ -135,8 +135,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (currentLocation != null) {
             LatLng current = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
             mMap.addMarker(new MarkerOptions().position(current).title("I am here"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
         } else {
-            Toast.makeText(this, "Unable to fetch current location", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Unable to fetch current location", Toast.LENGTH_SHORT).show();
         }
     }
 

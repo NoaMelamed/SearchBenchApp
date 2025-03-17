@@ -36,6 +36,7 @@ public class BenchFiltersFragment extends Fragment {
         RadioGroup radioGroupBenchSize = view.findViewById(R.id.radioGroupBenchSize);
         RadioButton radioSingleSeat = view.findViewById(R.id.radioSingleSeat);
         RadioButton radioRegularSize = view.findViewById(R.id.radioRegularSize);
+        RadioButton radioPicnicSize = view.findViewById(R.id.radioPicnicSize); // New radio button
 
         // Initialize Switches
         Switch switchShade = view.findViewById(R.id.switchShade);
@@ -76,10 +77,11 @@ public class BenchFiltersFragment extends Fragment {
             selectedSize = "Single Seat";
         } else if (selectedId == R.id.radioRegularSize) {
             selectedSize = "Regular Size";
+        } else if (selectedId == R.id.radioPicnicSize) { // Check for new option
+            selectedSize = "Picnic bench";
+        } else {
+            selectedSize = ""; // Set an empty string if no size is selected
         }
-     else {
-        selectedSize = ""; // Set an empty string if no size is selected
-    }
 
         // Retrieve values from the switches
         boolean inShade = switchShade.isChecked();

@@ -5,7 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#d8e4bc"
+    android:background="#ECEFF1"
     tools:context=".SingleBenchActivity">
 
     <ScrollView
@@ -28,9 +28,10 @@
                 android:textSize="30sp"
                 android:textStyle="bold"
                 android:text="Title"
-                android:textColor="#632240"
+                android:textColor="#37474F"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/outfit_regular"/>
 
             <!-- Bench Photo Section (Main Image + Gallery Button) -->
             <ImageView
@@ -39,7 +40,7 @@
                 android:layout_height="200dp"
                 android:padding="20dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/new_logo_icon_only"
+                android:src="@drawable/vintage_bench_tayelet_omg"
                 android:layout_marginBottom="8dp" />
 
             <Button
@@ -48,22 +49,21 @@
                 android:layout_height="wrap_content"
                 android:text="View More Photos"
                 android:layout_marginBottom="20dp"
-                android:backgroundTint="#632240"
-                android:textColor="#FFFFFF"/>
+                android:backgroundTint="#37474F"
+                android:textColor="#ECEFF1"
+                android:fontFamily="@font/outfit_regular"/>
 
             <FrameLayout
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-
+                android:layout_height="wrap_content" />
 
             <!-- Map Fragment -->
             <fragment
                 android:id="@+id/map_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:padding="20dp"
+                android:layout_marginHorizontal="40dp"
                 class="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="20dp" />
@@ -85,9 +85,9 @@
                 android:layout_height="wrap_content"
                 android:text="Add your rating"
                 android:layout_marginBottom="20dp"
-                android:backgroundTint="#632240"
-                android:textColor="#FFFFFF"/>
-
+                android:backgroundTint="#37474F"
+                android:textColor="#ECEFF1"
+                android:fontFamily="@font/outfit_regular"/>
 
             <!-- Bench Attributes -->
             <LinearLayout
@@ -99,61 +99,85 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="50dp">
 
+                <!-- Shaded Switch -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="It's shaded!" />
+                        android:text="It's shaded!"
+                        android:textColor="#37474F"
+                        android:layout_marginHorizontal="20dp"
+                        android:textSize="15dp"
+                        android:fontFamily="@font/outfit_regular"
+                        android:layout_weight="1"/>
+
                     <Switch
                         android:id="@+id/switch_shade"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginHorizontal="30dp"
                         android:checked="false"
-                        android:enabled="false"/>
+                        android:enabled="false"
+                        android:layout_weight="0"/>
                 </LinearLayout>
 
+                <!-- Quiet Street Switch -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="The street is quiet!" />
+                        android:text="The street is quiet!"
+                        android:textColor="#37474F"
+                        android:layout_marginHorizontal="20dp"
+                        android:textSize="15dp"
+                        android:fontFamily="@font/outfit_regular"
+                        android:layout_weight="1"/>
+
                     <Switch
                         android:id="@+id/switch_noise"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginHorizontal="30dp"
                         android:checked="false"
-                        android:enabled="false"/>
+                        android:enabled="false"
+                        android:layout_weight="0"/>
                 </LinearLayout>
 
+                <!-- Coffee Nearby Switch -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="There's coffee nearby!" />
+                        android:text="There's coffee nearby!"
+                        android:textColor="#37474F"
+                        android:textSize="15dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:fontFamily="@font/outfit_regular"
+                        android:layout_weight="1"/>
+
                     <Switch
                         android:id="@+id/switch_cafe"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginHorizontal="30dp"
                         android:checked="false"
-                        android:enabled="false"/>
+                        android:enabled="false"
+                        android:layout_weight="0"/>
                 </LinearLayout>
-            </LinearLayout>
 
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
