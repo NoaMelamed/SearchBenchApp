@@ -53,6 +53,7 @@
                 android:textColor="#ECEFF1"
                 android:fontFamily="@font/outfit_regular"/>
 
+
             <FrameLayout
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
@@ -89,6 +90,66 @@
                 android:textColor="#ECEFF1"
                 android:fontFamily="@font/outfit_regular"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp"
+            android:gravity="center_vertical">
+
+        </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="30dp">
+
+                <TextView
+                    android:id="@+id/add_photo_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="Share your own photos:"
+                    android:textColor="#37474F"
+                    android:layout_marginBottom="15dp"
+                    android:fontFamily="@font/outfit_regular"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/camera_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_camera"
+                        android:padding="10dp"/>
+
+                    <Button
+                        android:id="@+id/gallery_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/ic_gallery"
+                        android:padding="10dp"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/submit_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#37474F"
+                    android:textColor="#ECEFF1"
+                    android:text="Submit Images"
+                    android:layout_marginTop="15dp"/>
+            </LinearLayout>
+
+
             <!-- Bench Attributes -->
             <LinearLayout
                 android:id="@+id/attributes_container"
@@ -96,14 +157,16 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="50dp">
+
+
 
                 <!-- Shaded Switch -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_marginTop="30dp"
                     android:gravity="center_vertical">
                     <TextView
                         android:layout_width="wrap_content"
@@ -115,14 +178,12 @@
                         android:fontFamily="@font/outfit_regular"
                         android:layout_weight="1"/>
 
-                    <Switch
-                        android:id="@+id/switch_shade"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="30dp"
-                        android:checked="false"
-                        android:enabled="false"
-                        android:layout_weight="0"/>
+                    <ImageView
+                        android:id="@+id/shaded_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_cross"
+                        android:layout_marginHorizontal="30dp"/>
                 </LinearLayout>
 
                 <!-- Quiet Street Switch -->
@@ -130,6 +191,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_marginTop="15dp"
                     android:gravity="center_vertical">
                     <TextView
                         android:layout_width="wrap_content"
@@ -141,14 +203,12 @@
                         android:fontFamily="@font/outfit_regular"
                         android:layout_weight="1"/>
 
-                    <Switch
-                        android:id="@+id/switch_noise"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="30dp"
-                        android:checked="false"
-                        android:enabled="false"
-                        android:layout_weight="0"/>
+                    <ImageView
+                        android:id="@+id/noise_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_cross"
+                    android:layout_marginHorizontal="30dp"/>
                 </LinearLayout>
 
                 <!-- Coffee Nearby Switch -->
@@ -156,6 +216,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_marginTop="15dp"
                     android:gravity="center_vertical">
                     <TextView
                         android:layout_width="wrap_content"
@@ -167,14 +228,12 @@
                         android:fontFamily="@font/outfit_regular"
                         android:layout_weight="1"/>
 
-                    <Switch
-                        android:id="@+id/switch_cafe"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="30dp"
-                        android:checked="false"
-                        android:enabled="false"
-                        android:layout_weight="0"/>
+                    <ImageView
+                        android:id="@+id/cafe_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_cross"
+                    android:layout_marginHorizontal="30dp"/>
                 </LinearLayout>
 
             </LinearLayout>

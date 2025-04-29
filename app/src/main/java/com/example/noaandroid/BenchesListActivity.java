@@ -26,66 +26,77 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 
 public class BenchesListActivity extends AppCompatActivity {
+
+    // UI and adapter
     private RecyclerView recyclerView;
     private BenchesAdapter adapter;
-    private FusedLocationProviderClient fusedLocationClient;
-    private final int FINE_PERMISSION_CODE = 1;
-    private static final int REQUEST_CODE = 1001; // You can change the number if needed
 
-    private static final double DEFAULT_LATITUDE = 32.0767; // Slightly off-center Tel Aviv
-    private static final double DEFAULT_LONGITUDE = 34.7778;
+    // Location
+    private FusedLocationProviderClient fusedLocationClient;
+    private Location currentLocation;
     private double userLatitude;
     private double userLongitude;
-    Location currentLocation;
+    private static final double DEFAULT_LATITUDE = 32.0767;
+    private static final double DEFAULT_LONGITUDE = 34.7778;
 
+    // Permission codes
+    private final int FINE_PERMISSION_CODE = 1;
+    private static final int REQUEST_CODE = 1001;
 
+    // Pending data for location permission callback
+    private Map<String, Object> pendingFilters;
+    private Map<String, Object> pendingAllFields;
+
+    /** Called when the activity is starting */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_benches_list);
 
+        // Set up location client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        // Initialize UI components
         initRecyclerView();
         initNavigation();
 
+        //Check for necessary services
         checkGooglePlayServices();
 
-        fetchAllFields();
-
+        // Fetch filter data and benches
+        prepareFiltersAndFetchData();
     }
 
+    /** Initializes the RecyclerView and its adapter */
     private void initRecyclerView() {
+        // Set up layout manager and adapter
         recyclerView = findViewById(R.id.benches_recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new BenchesAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
     }
 
+    /** Sets up the side navigation drawer and toolbar */
     private void initNavigation() {
+        // Connect drawer and toolbar
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-        setSupportActionBar(toolbar); // Set toolbar as ActionBar
+        // Set toolbar as action bar
+        setSupportActionBar(toolbar);
 
         // Handle toolbar buttons
         ImageView backIcon = findViewById(R.id.back_icon);
@@ -95,7 +106,7 @@ public class BenchesListActivity extends AppCompatActivity {
         menuIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
         navigationView.bringToFront();
 
-        // Setup navigation item selection
+        // Handle menu item selection
         navigationView.setNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.nav_add_bench) {
                 Intent intent = new Intent(BenchesListActivity.this, AddBenchActivity.class);
@@ -108,182 +119,9 @@ public class BenchesListActivity extends AppCompatActivity {
         });
     }
 
-
-    private void fetchAllFields() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("benches").limit(1).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                DocumentSnapshot document = task.getResult().getDocuments().get(0);
-
-                // Explicitly create a HashMap to prevent type confusion
-                Map<String, Object> allFields = new HashMap<>();
-                if (document.getData() != null) {
-                    allFields.putAll(document.getData()); // Copy data safely
-                }
-
-                // Pass a Runnable instead of a Map
-                onRequestPermission(() -> fetchFilteredBenches(retrieveFilters(), allFields));
-
-            } else {
-                Log.e("Firestore", "Error fetching fields", task.getException());
-                showNoResultsMessage("Error fetching initial data. Please try again later.");
-            }
-        });
-    }
-
-
-    private Map<String, Object> retrieveFilters() { // only selected ones
-        Intent intent = getIntent();
-        Map<String, Object> filters = new HashMap<>();
-        // Only add the "size" filter if it's provided (non-null and non-empty)
-        String size = intent.getStringExtra("size");
-        if (size != null && !size.trim().isEmpty()) { //Handle empty string case
-            filters.put("size", size);
-        }
-        // For boolean filters, only include them if they are true (i.e., selected by the user)
-        if (intent.getBooleanExtra("inShade", false)) {
-            filters.put("shade", true);
-        } if (intent.getBooleanExtra("quietStreet", false)) {
-            filters.put("quietStreet", true);
-        } if (intent.getBooleanExtra("nearCafe", false)) {
-            filters.put("nearCafe", true);
-        } if (intent.getBooleanExtra("shortDistance", false)) {
-            filters.put("shortDistance", true);
-        } if (intent.getBooleanExtra("highRated", false)) {
-            filters.put("highRated", true);
-        }
-
-        Log.d("DEBUG", "Retrieved Filters: " + filters.toString()); // 🔥 Log retrieved filters
-        return filters;
-    }
-
-
-    private void fetchFilteredBenches(Map<String, Object> userFilters, Map<String, Object> allFields) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference benchesRef = db.collection("benches");
-        Query query = applyFilters(benchesRef, userFilters, allFields);
-
-        query.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<Bench> benches = task.getResult().toObjects(Bench.class);
-                Log.d("DEBUG", "Fetched " + benches.size() + " benches before distance filtering");
-
-                // Apply distance filtering if shortDistance is selected
-                if (Boolean.TRUE.equals(userFilters.get("shortDistance"))) {
-                    GeoPoint userLocation = new GeoPoint(userLatitude, userLongitude);
-                    benches = filterByDistance(benches, userLocation, 500); // Filter benches within 500m
-                }
-
-                Log.d("DEBUG", "Benches after distance filtering: " + benches.size());
-                updateRecyclerView(benches);
-            } else {
-                Log.e("Firestore", "Error fetching benches", task.getException());
-                showNoResultsMessage("No matching benches found.");
-            }
-        });
-    }
-
-    private Query applyFilters(Query query, Map<String, Object> userFilters, Map<String, Object> allFields) {
-        Log.d("DEBUG", "applyFilters called with userFilters: " + userFilters.toString());
-
-        for (Map.Entry<String, Object> entry : allFields.entrySet()) {
-            String fieldName = entry.getKey();
-            Object fieldValue = userFilters.get(fieldName); // Get filter value from userFilters
-
-            Log.d("DEBUG", "Checking field: " + fieldName + ", Value: " + fieldValue);
-
-            if (fieldValue != null) {
-                Log.d("DEBUG", "Applying filter for field: " + fieldName);
-                query = applyUserFilter(query, fieldName, fieldValue);
-            }
-        }
-
-        if (Boolean.TRUE.equals(userFilters.get("highRated"))) {
-            Log.d("DEBUG", "Manually applying highRated filter (averageRating >= 4.0)");
-            query = query.whereGreaterThanOrEqualTo("averageRating", 4.0);
-        }
-
-        return query;
-    }
-
-    private Query applyUserFilter(Query query, String fieldName, Object filterValue) {
-        Log.d("DEBUG", "Applying filter: " + fieldName + " = " + filterValue);
-
-        if (filterValue instanceof Boolean) {
-            return query.whereEqualTo(fieldName, filterValue);
-        } else if (filterValue instanceof Number) {
-            return query.whereGreaterThanOrEqualTo(fieldName, filterValue);
-        } else if (filterValue instanceof String) {
-            // Handle String filters (case-insensitive)
-            return query.whereEqualTo(fieldName, filterValue); //or use a more complex query
-        } else {
-            Log.w("FirestoreQuery", "Unsupported filter type: " + filterValue.getClass() + " for field: " + fieldName);
-            return query;
-        }
-    }
-
-
-    private boolean matchesStringFilter(Bench bench, Map<String, Object> userFilters, String fieldName) {
-        Object filterValue = userFilters.get(fieldName);
-        if (filterValue == null) return true; // No filter for this field
-
-        switch (fieldName) {
-            case "size":
-                return filterValue.equals(bench.getSize());
-            case "name":
-                return filterValue.equals(bench.getName());
-            case "imageUri":
-                return filterValue.equals(bench.getImageUri());
-            default:
-                return true; //Shouldn't happen. Add a Log message here for debugging purposes
-        }
-    }
-
-
-
-    private Query applyAllValuesFilter(Query query, String fieldName, Object fieldValue) {
-        if (fieldValue == null) {
-            Log.w("FirestoreQuery", "Field value is null for field: " + fieldName + ". Skipping filter.");
-            return query; //Skip the filtering if the value is null
-            // Handle "all values" case differently based on the field type
-        }
-            if (fieldValue instanceof Boolean) {
-                // Query for both true and false (using 'in' operator)
-                return query.whereIn(fieldName, Arrays.asList(true, false));
-            } else if (fieldValue instanceof Number) {
-                //Query all numbers (example: greater than or equals to 0)
-                return query.whereGreaterThanOrEqualTo(fieldName, 0);
-            } else if (fieldValue instanceof String) {
-                //This will not work efficiently without a specific filter. Consider revising.
-                Log.w("FirestoreQuery", "Cannot efficiently query all values for String field: " + fieldName);
-                return query;
-            } else {
-                Log.w("FirestoreQuery", "Unsupported field type: " + fieldValue.getClass() + " for field: " + fieldName);
-                return query;
-            }
-        }
-
-
-
-
-    private void updateRecyclerView(List<Bench> benchesList) {
-        Log.d("DEBUG", "Updating RecyclerView with " + benchesList.size() + " benches"); // 🔥 Log list size
-
-        TextView noResultsMessage = findViewById(R.id.noResultsMessage);
-        recyclerView.setVisibility(View.VISIBLE);
-        noResultsMessage.setVisibility(View.GONE);
-        adapter.updateData(benchesList);
-    }
-
-    private void showNoResultsMessage(String message) {
-        TextView noResultsMessage = findViewById(R.id.noResultsMessage);
-        RecyclerView recyclerView = findViewById(R.id.benches_recycle_view);
-        noResultsMessage.setText(message);
-        noResultsMessage.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.GONE);
-    }
-
+    /** Checks if Google Play Services are available */
     private void checkGooglePlayServices() {
+        // Validate Google services
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -295,30 +133,119 @@ public class BenchesListActivity extends AppCompatActivity {
             }
         }
     }
-    private void getLastLocation(Runnable callback) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
-            return;
-        }
 
-        fusedLocationClient.getLastLocation()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        currentLocation = task.getResult();
-                        userLatitude = currentLocation.getLatitude();
-                        userLongitude = currentLocation.getLongitude();
-                        Log.d("DEBUG", "User location retrieved: " + userLatitude + ", " + userLongitude);
-                    } else {
-                        Log.w("Location", "Failed to get location", task.getException());
-                        userLatitude = DEFAULT_LATITUDE;
-                        userLongitude = DEFAULT_LONGITUDE;
-                    }
-                    callback.run(); // Execute callback function
-                });
+    /** Loads one document to extract fields and fetch benches with filters */
+    private void prepareFiltersAndFetchData() {
+        // Fetch initial fields from Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("benches").limit(1).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                Map<String, Object> allFields = new HashMap<>();
+                if (document.getData() != null) {
+                    allFields.putAll(document.getData());
+                }
+
+                // Get filters and request permission if needed
+                Map<String, Object> filters = retrieveFilters();
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    getLastLocationAndThenFetch(filters, allFields);
+                } else {
+                    pendingFilters = filters;
+                    pendingAllFields = allFields;
+                    requestLocationPermission();
+                }
+            } else {
+                Log.e("Firestore", "Error fetching fields", task.getException());
+                showNoResultsMessage("Error fetching initial data. Please try again later.");
+            }
+        });
     }
 
+    /** Retrieves filter settings from the intent */
+    private Map<String, Object> retrieveFilters() {
+        // Parse intent extras
+        Intent intent = getIntent();
+        Map<String, Object> filters = new HashMap<>();
+        String size = intent.getStringExtra("size");
+        if (size != null && !size.trim().isEmpty()) {
+            filters.put("size", size);
+        }
+        if (intent.getBooleanExtra("inShade", false)) {
+            filters.put("shade", true);
+        }
+        if (intent.getBooleanExtra("quietStreet", false)) {
+            filters.put("quietStreet", true);
+        }
+        if (intent.getBooleanExtra("nearCafe", false)) {
+            filters.put("nearCafe", true);
+        }
+        if (intent.getBooleanExtra("shortDistance", false)) {
+            filters.put("shortDistance", true);
+        }
+        if (intent.getBooleanExtra("highRated", false)) {
+            filters.put("highRated", true);
+        }
+        Log.d("DEBUG", "Retrieved Filters: " + filters.toString());
+        return filters;
+    }
 
+    /** Fetches benches using Firestore based on filters */
+    private void fetchFilteredBenches(Map<String, Object> userFilters, Map<String, Object> allFields) {
+        // Build and run Firestore query
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference benchesRef = db.collection("benches");
+        Query query = applyFilters(benchesRef, userFilters, allFields);
+
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Bench> benches = task.getResult().toObjects(Bench.class);
+                if (Boolean.TRUE.equals(userFilters.get("shortDistance"))) {
+                    GeoPoint userLocation = new GeoPoint(userLatitude, userLongitude);
+                    benches = filterByDistance(benches, userLocation, 500);
+                }
+                updateRecyclerView(benches);
+            } else {
+                Log.e("Firestore", "Error fetching benches", task.getException());
+                showNoResultsMessage("No matching benches found.");
+            }
+        });
+    }
+
+    /** Applies user filters to a Firestore query */
+    private Query applyFilters(Query query, Map<String, Object> userFilters, Map<String, Object> allFields) {
+        // Filter fields
+        for (Map.Entry<String, Object> entry : allFields.entrySet()) {
+            String fieldName = entry.getKey();
+            Object filterValue = userFilters.get(fieldName);
+            if (filterValue != null) {
+                query = applyUserFilter(query, fieldName, filterValue);
+            }
+        }
+        if (Boolean.TRUE.equals(userFilters.get("highRated"))) {
+            query = query.whereGreaterThanOrEqualTo("averageRating", 4.0);
+        }
+        return query;
+    }
+
+    /** Applies a single user filter to a query */
+    private Query applyUserFilter(Query query, String fieldName, Object filterValue) {
+        // Add Firestore filter clause
+        if (filterValue instanceof Boolean) {
+            return query.whereEqualTo(fieldName, filterValue);
+        } else if (filterValue instanceof Number) {
+            return query.whereGreaterThanOrEqualTo(fieldName, filterValue);
+        } else if (filterValue instanceof String) {
+            return query.whereEqualTo(fieldName, filterValue);
+        } else {
+            Log.w("FirestoreQuery", "Unsupported filter type: " + filterValue.getClass());
+            return query;
+        }
+    }
+
+    /** Filters a list of benches by distance */
     private List<Bench> filterByDistance(List<Bench> benches, GeoPoint userLocation, double radius) {
+        // Keep only nearby benches
         List<Bench> nearbyBenches = new ArrayList<>();
         for (Bench bench : benches) {
             if (bench.getLocation() != null && getDistanceBetween(userLocation, bench.getLocation()) <= radius) {
@@ -328,9 +255,10 @@ public class BenchesListActivity extends AppCompatActivity {
         return nearbyBenches;
     }
 
-
+    /** Returns distance in meters between two GeoPoints */
     private double getDistanceBetween(GeoPoint loc1, GeoPoint loc2) {
-        double earthRadius = 6371; // Radius of the earth in km
+        // Calculate haversine distance
+        double earthRadius = 6371;
         double lat1 = Math.toRadians(loc1.getLatitude());
         double lon1 = Math.toRadians(loc1.getLongitude());
         double lat2 = Math.toRadians(loc2.getLatitude());
@@ -339,17 +267,80 @@ public class BenchesListActivity extends AppCompatActivity {
         double dLon = lon2 - lon1;
         double a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dLon / 2), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distanceInKilometers = earthRadius * c;
-        return distanceInKilometers * 1000; // Convert to meters
+        return earthRadius * c * 1000;
     }
 
-    private void onRequestPermission(Runnable actionIfGranted) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            actionIfGranted.run(); // This expects a Runnable
-        } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+    /** Updates the UI with a list of benches */
+    private void updateRecyclerView(List<Bench> benchesList) {
+        // Update adapter and hide no results
+        TextView noResultsMessage = findViewById(R.id.noResultsMessage);
+        recyclerView.setVisibility(View.VISIBLE);
+        noResultsMessage.setVisibility(View.GONE);
+        adapter.updateData(benchesList);
+    }
+
+    /** Shows a message when no results are found */
+    private void showNoResultsMessage(String message) {
+        // Show no results UI
+        TextView noResultsMessage = findViewById(R.id.noResultsMessage);
+        RecyclerView recyclerView = findViewById(R.id.benches_recycle_view);
+        noResultsMessage.setText(message);
+        noResultsMessage.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+    }
+
+    /** Gets last known location and then fetches benches */
+    private void getLastLocationAndThenFetch(Map<String, Object> filters, Map<String, Object> allFields) {
+        // Use device location if permission is granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            fetchFilteredBenches(filters, allFields);
+            return;
+        }
+
+        fusedLocationClient.getLastLocation().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                currentLocation = task.getResult();
+                userLatitude = currentLocation.getLatitude();
+                userLongitude = currentLocation.getLongitude();
+            } else {
+                userLatitude = DEFAULT_LATITUDE;
+                userLongitude = DEFAULT_LONGITUDE;
+            }
+            fetchFilteredBenches(filters, allFields);
+        });
+    }
+
+    /** Requests location permission */
+    private void requestLocationPermission() {
+        // Ask user for fine location access
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+    }
+
+    /** Called when the user responds to permission request */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (pendingFilters != null && pendingAllFields != null) {
+                    getLastLocationAndThenFetch(pendingFilters, pendingAllFields);
+                    pendingFilters = null;
+                    pendingAllFields = null;
+                } else {
+                    getLastLocationAndThenFetch(retrieveFilters(), new HashMap<>());
+                }
+            } else {
+                Toast.makeText(this, "Location permission is needed to show nearby benches", Toast.LENGTH_SHORT).show();
+                if (pendingFilters != null && pendingAllFields != null) {
+                    userLatitude = DEFAULT_LATITUDE;
+                    userLongitude = DEFAULT_LONGITUDE;
+                    fetchFilteredBenches(pendingFilters, pendingAllFields);
+                    pendingFilters = null;
+                    pendingAllFields = null;
+                }
+            }
         }
     }
-
 }

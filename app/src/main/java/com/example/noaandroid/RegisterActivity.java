@@ -28,6 +28,12 @@ public class RegisterActivity extends AppCompatActivity {
     // Initialize Firebase Authentication instance.
     FirebaseAuth auth;
 
+    /**
+     * Called when the activity is created. Initializes Firebase, sets up button listeners,
+     * and handles navigation between the registration, sign-in, and intro activities.
+     *
+     * @param savedInstanceState The saved instance state, if available.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
         // Set up the click listener for the register button.
         registerButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                registerUser();
+                registerUser(); // Call the method to register the user
             }
         });
 
@@ -69,6 +75,12 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Registers a new user with Firebase Authentication. Validates user input for email and password,
+     * then attempts to create the user with Firebase's `createUserWithEmailAndPassword` method.
+     *
+     * Displays error messages if validation fails or if Firebase registration fails.
+     */
     private void registerUser() {
         // Get user inputs from the form.
         EditText etEmailRegister = findViewById(R.id.et_email_register);

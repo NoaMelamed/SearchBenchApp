@@ -24,6 +24,9 @@ public class ImageGalleryFragment extends Fragment {
     private ImageAdapter imageAdapter;
     private Button closeButton;
 
+    /**
+     * Creates a new instance of ImageGalleryFragment with a list of image URLs
+     */
     public static ImageGalleryFragment newInstance(List<String> imageUrls) {
         ImageGalleryFragment fragment = new ImageGalleryFragment();
         Bundle args = new Bundle();
@@ -32,6 +35,9 @@ public class ImageGalleryFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Retrieves the image URLs passed via arguments
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,32 +46,34 @@ public class ImageGalleryFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Inflates the fragment layout and initializes views
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_image_gallery, container, false);
         initViews(view);
-
         return view;
     }
 
+    /**
+     * Sets up the RecyclerView and close button
+     */
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.recycler_view);
         closeButton = view.findViewById(R.id.close_button);
 
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3)); // 3 columns for small images
+        // Set RecyclerView to use a grid layout with 3 columns
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         imageAdapter = new ImageAdapter(getContext(), imageUrls);
         recyclerView.setAdapter(imageAdapter);
 
-
+        // Close button removes the fragment and pops the back stack
         closeButton.setOnClickListener(v -> {
             FragmentManager fragmentManager = getParentFragmentManager();
-            fragmentManager.beginTransaction().remove(this).commit(); // Ensure it's removed
-            fragmentManager.popBackStack(); // Clear from back stack
+            fragmentManager.beginTransaction().remove(this).commit(); // Remove this fragment
+            fragmentManager.popBackStack(); // Pop from back stack
         });
-
     }
-
-
 }

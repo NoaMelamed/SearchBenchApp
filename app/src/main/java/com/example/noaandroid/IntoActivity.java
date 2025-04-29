@@ -15,6 +15,10 @@ import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderF
 
 public class IntoActivity extends AppCompatActivity {
 
+    /**
+     * Initializes the activity, sets up the Firebase instance,
+     * and sets click listeners for login and register buttons.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +26,6 @@ public class IntoActivity extends AppCompatActivity {
 
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
-
 
         // Initialize the login button and set up a click listener
         Button loginButton = findViewById(R.id.loginButton);
@@ -43,7 +46,5 @@ public class IntoActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
     }
 }

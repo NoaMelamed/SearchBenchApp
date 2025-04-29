@@ -2,6 +2,7 @@ package com.example.noaandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,38 +20,44 @@ import androidx.fragment.app.Fragment;
  */
 public class BenchFiltersFragment extends Fragment {
 
+    /**
+     * Inflates the layout and initializes the filter view.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate the layout for this fragment.
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_bench_filters, container, false);
 
-        // Initialize views and set up listeners
+        // Initialize all UI views and set up listeners
         initViews(view);
 
         return view;
     }
 
+    /**
+     * Initializes the filter UI elements and sets the listener for the Apply button.
+     */
     private void initViews(View view) {
-        // Initialize RadioGroup and RadioButtons for bench size
+        // Initialize RadioGroup and RadioButtons for bench size selection
         RadioGroup radioGroupBenchSize = view.findViewById(R.id.radioGroupBenchSize);
         RadioButton radioSingleSeat = view.findViewById(R.id.radioSingleSeat);
         RadioButton radioRegularSize = view.findViewById(R.id.radioRegularSize);
-        RadioButton radioPicnicSize = view.findViewById(R.id.radioPicnicSize); // New radio button
+        RadioButton radioPicnicSize = view.findViewById(R.id.radioPicnicSize); // Newly added picnic size option
 
-        // Initialize Switches
+        // Initialize Switches for various filter criteria
         Switch switchShade = view.findViewById(R.id.switchShade);
         Switch switchQuietStreet = view.findViewById(R.id.switchQuietStreet);
         Switch switchNearCafe = view.findViewById(R.id.switchNearCafe);
         Switch switchShortDistance = view.findViewById(R.id.switchShortDistance);
         Switch switchHighRated = view.findViewById(R.id.switchHighRated);
 
-        // Initialize Apply Filters button
+        // Initialize the Apply Filters button
         Button applyFiltersButton = view.findViewById(R.id.applyFiltersButton);
 
-        // Set click listener for the Apply Filters button
+        // Set up a click listener to handle applying the selected filters
         applyFiltersButton.setOnClickListener(v -> {
-            // Save the selected filter options and pass them to the next activity
+            // Save selected options and pass them via Intent to BenchesListActivity
             Intent intent = saveFilters(
                     radioGroupBenchSize,
                     switchShade,
@@ -60,43 +67,53 @@ public class BenchFiltersFragment extends Fragment {
                     switchHighRated
             );
 
-            // Navigate to the BenchesListActivity
+            // Navigate to the BenchesListActivity with filter data
             startActivity(intent);
         });
     }
 
+    /**
+     * Collects selected filter values and returns an Intent with them.
+     *
+     * @return Intent containing filter data to be sent to BenchesListActivity
+     */
     private Intent saveFilters(RadioGroup radioGroupBenchSize, Switch switchShade, Switch switchQuietStreet,
                                Switch switchNearCafe, Switch switchShortDistance, Switch switchHighRated) {
-        // Create an Intent to pass the filters to BenchesListActivity
+        // Create an Intent to launch BenchesListActivity
         Intent intent = new Intent(getActivity(), BenchesListActivity.class);
 
-        // Determine the selected bench size from the RadioGroup
+        // Get the selected bench size from the RadioGroup
         String selectedSize = null;
         int selectedId = radioGroupBenchSize.getCheckedRadioButtonId();
+        Log.d("DEBUG", "selectedID " + selectedId);
+
         if (selectedId == R.id.radioSingleSeat) {
-            selectedSize = "Single Seat";
+            selectedSize = "Single";
         } else if (selectedId == R.id.radioRegularSize) {
-            selectedSize = "Regular Size";
-        } else if (selectedId == R.id.radioPicnicSize) { // Check for new option
-            selectedSize = "Picnic bench";
+            selectedSize = "Regular";
+        } else if (selectedId == R.id.radioPicnicSize) {
+            selectedSize = "Picnic";
         } else {
-            selectedSize = ""; // Set an empty string if no size is selected
+            selectedSize = ""; // Default to empty if no option is selected
         }
 
-        // Retrieve values from the switches
+        // Retrieve boolean values from the switches
         boolean inShade = switchShade.isChecked();
         boolean quietStreet = switchQuietStreet.isChecked();
         boolean nearCafe = switchNearCafe.isChecked();
         boolean shortDistance = switchShortDistance.isChecked();
         boolean highRated = switchHighRated.isChecked();
 
-        // Add all filter values to the Intent
+        // Add all filter data as extras to the Intent
         intent.putExtra("size", selectedSize);
         intent.putExtra("inShade", inShade);
         intent.putExtra("quietStreet", quietStreet);
         intent.putExtra("nearCafe", nearCafe);
         intent.putExtra("shortDistance", shortDistance);
         intent.putExtra("highRated", highRated);
+
+        // Log the selected size for debugging
+        Log.d("DEBUG", "Passing size filter: " + selectedSize);
 
         return intent;
     }

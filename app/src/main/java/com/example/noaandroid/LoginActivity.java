@@ -7,7 +7,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.content.Intent;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,14 +72,18 @@ public class LoginActivity extends AppCompatActivity {
      * @param passwordLogin The password entered by the user.
      */
     private void loginClient(String emailLogin, String passwordLogin) {
-        auth.signInWithEmailAndPassword(emailLogin, passwordLogin).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-                // If login is successful, show a welcome dialog
-                showLoginAlertDialog();
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            }
-        });
+//        auth.signInWithEmailAndPassword(emailLogin, passwordLogin).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+//            @Override
+//            public void onSuccess(AuthResult authResult) {
+//                // If login is successful, show a welcome dialog
+//                showLoginAlertDialog();
+//                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+//            }
+//        });
+
+        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        startActivity(intent); // <-- This was missing
+
     }
 
     /**

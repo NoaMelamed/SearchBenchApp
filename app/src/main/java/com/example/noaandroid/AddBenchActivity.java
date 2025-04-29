@@ -29,13 +29,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.appcheck.FirebaseAppCheck;
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
-import com.google.firebase.firestore.DocumentReference;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -58,54 +54,66 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
+// imports...
+
 public class AddBenchActivity extends AppCompatActivity {
 
+    // Constants for camera and gallery request codes
     private static final int CAMERA_REQUEST_CODE = 101;
     private static final int GALLERY_REQUEST_CODE = 102;
 
+    // UI Elements
     private EditText etBenchName;
     private RatingBar ratingBar;
     private CheckBox cbShade, cbQuietStreet, cbNearCafe;
     private Spinner spinnerSize;
     private Button btnSelectLocation, btnUploadImage, btnSubmit, btnCamera;
     private ImageView imagePreview, ivPhoto;
-    private Uri imageUri = null; // URI for selected image
-    private double lat = 0.0; // Dummy Latitude
-    private double lng = 0.0; // Dummy Longitude
+
+    // Data and Firebase
+    private Uri imageUri = null;
+    private double lat = 0.0;
+    private double lng = 0.0;
     private FirebaseFirestore db;
     private FusedLocationProviderClient fusedLocationClient;
-    private List<Uri> selectedImages = new ArrayList<>(); // List to hold selected image URIs
-
+    private List<Uri> selectedImages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_bench);
 
-        initViews();
-        initSpinner();
-        initNavigation();
-        initListeners();
+        initViews();      // Initialize UI components
+        initSpinner();    // Initialize spinner options
+        initNavigation(); // Setup navigation drawer
+        initListeners();  // Set listeners for buttons
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         db = FirebaseFirestore.getInstance();
-
-        // Set listeners
-
-
     }
 
+    /**
+     * Sets click listeners for buttons.
+     */
     private void initListeners() {
         btnCamera.setOnClickListener(v -> openCamera());
         btnUploadImage.setOnClickListener(v -> openGallery());
         btnSubmit.setOnClickListener(v -> submitBench());
         btnSelectLocation.setOnClickListener(v -> selectLocation());
     }
+
+    /**
+     * Opens the camera app to capture an image.
+     */
     private void openCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, CAMERA_REQUEST_CODE);
     }
 
+    /**
+     * Opens the gallery to select an image.
+     */
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -113,20 +121,23 @@ public class AddBenchActivity extends AppCompatActivity {
         startActivityForResult(intent, GALLERY_REQUEST_CODE);
     }
 
+    /**
+     * Initiates the location selection by checking permissions.
+     */
     private void selectLocation() {
-        // Check for location permission
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // If permission is not granted, request it
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         } else {
-            // If permission is already granted, get the location
             getLocation();
         }
     }
+
+    /**
+     * Retrieves the user's current location if permission is granted.
+     */
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Request location permissions if not granted
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             Toast.makeText(this, "Location permission not granted. Please allow it in settings.", Toast.LENGTH_SHORT).show();
             return;
@@ -137,44 +148,37 @@ public class AddBenchActivity extends AppCompatActivity {
                     if (location != null) {
                         lat = location.getLatitude();
                         lng = location.getLongitude();
-
-                        // Update the button text to reflect the selected location
-                        btnSelectLocation.setText("Location Selected:");
-
-                        // Optionally, enable other actions or save the location for submission
-                        btnSubmit.setEnabled(true); // Enable the submit button
+                        btnSelectLocation.setText("Location Selected.");
+                        btnSubmit.setEnabled(true);
                     } else {
-                        Toast.makeText(AddBenchActivity.this, "Failed to retrieve location. Please try again.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Failed to retrieve location. Please try again.", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(AddBenchActivity.this, "Error retrieving location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error retrieving location: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
 
-
-
+    /**
+     * Validates inputs and uploads a new bench to Firestore.
+     */
     private void submitBench() {
-        // Collect data
         String benchName = etBenchName.getText().toString().trim();
         if (benchName.isEmpty()) {
             etBenchName.setError("Please enter the bench name");
             return;
         }
 
-        // Validate the location
         if (lat == 0.0 && lng == 0.0) {
             Toast.makeText(this, "Please select a location.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Validate image selection
         if (selectedImages.isEmpty()) {
             Toast.makeText(this, "Please select at least one image.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Proceed to upload and store bench data
         float rating = ratingBar.getRating();
         boolean hasShade = cbShade.isChecked();
         boolean isQuietStreet = cbQuietStreet.isChecked();
@@ -182,31 +186,25 @@ public class AddBenchActivity extends AppCompatActivity {
         String size = spinnerSize.getSelectedItem().toString();
         GeoPoint benchLocation = new GeoPoint(lat, lng);
 
-        // Create an ArrayList to hold the rating
         List<Float> ratings = new ArrayList<>();
-        ratings.add(rating); // Add the current rating to the list
-        double averageRating = rating; // Initialize averageRating with the first rating
+        ratings.add(rating);
 
-        // Show progress dialog while uploading
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading bench...");
         progressDialog.show();
 
-        // Upload images and create bench data
-        uploadImagesAndCreateBench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, rating, averageRating);
+        uploadImagesAndCreateBench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, rating, rating);
 
-        // Dismiss the progress dialog and show success toast once the upload finishes
         progressDialog.dismiss();
         Toast.makeText(this, "Bench uploaded successfully", Toast.LENGTH_SHORT).show();
 
-        // Navigate to the home activity
         Intent intent = new Intent(AddBenchActivity.this, HomeActivity.class);
         startActivity(intent);
     }
 
-
-
-
+    /**
+     * Uploads selected images to Firebase Storage and creates a bench entry.
+     */
     private void uploadImagesAndCreateBench(String benchName, GeoPoint benchLocation, boolean hasShade, boolean isQuietStreet, boolean isNearCafe, String size, float rating, double averageRating) {
         List<String> imageUrls = new ArrayList<>();
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -216,54 +214,50 @@ public class AddBenchActivity extends AppCompatActivity {
         uploadImagesToStorage(selectedImages, imageUrls, progressDialog, benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, rating, averageRating);
     }
 
-
+    /**
+     * Uploads the bench object to Firestore database.
+     */
     private void uploadToFirestore(Map<String, Object> benchMap, Bench bench) {
         db.collection("benches")
                 .add(benchMap)
                 .addOnSuccessListener(documentReference -> {
-                    String benchDocId = documentReference.getId(); // Get Firestore-generated ID
-
-                    // Update the Firestore document with its own ID
+                    String benchDocId = documentReference.getId();
                     documentReference.update("benchId", benchDocId)
-                            .addOnSuccessListener(aVoid ->
-                                    Log.d("Firestore", "Bench ID successfully updated in Firestore")
-
-                            )
-                            .addOnFailureListener(e ->
-                                    Log.e("Firestore", "Failed to update Bench ID", e)
-                            );
-
-                    // update local items with firebase id
+                            .addOnSuccessListener(aVoid -> Log.d("Firestore", "Bench ID successfully updated"))
+                            .addOnFailureListener(e -> Log.e("Firestore", "Failed to update Bench ID", e));
                     benchMap.put("benchId", benchDocId);
                     bench.setBenchId(benchDocId);
-
-
                 })
-                .addOnFailureListener(e ->
-                        Log.e("Firestore", "Error adding bench", e)
-                );
+                .addOnFailureListener(e -> Log.e("Firestore", "Error adding bench", e));
     }
 
 
-
-
+    /**
+     * This method is called when an activity (such as the camera or gallery) finishes.
+     * It processes the result of the image selection or capture.
+     *
+     * @param requestCode The request code used to identify the request.
+     * @param resultCode The result code indicating the success or failure of the activity.
+     * @param data The intent containing the result data, which may include an image.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST_CODE && data != null) {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
-                ivPhoto.setImageBitmap(photo); // Display image
-                imageUri = getImageUri(photo); // Convert to URI
+                ivPhoto.setImageBitmap(photo);
+                imageUri = getImageUri(photo);
                 selectedImages.add(imageUri);
             }
         }
     }
 
-
-
+    /**
+     * Uploads multiple images to Firebase Storage.
+     */
     private void uploadImagesToStorage(List<Uri> images, List<String> imageUrls, ProgressDialog progressDialog, String benchName, GeoPoint benchLocation, boolean hasShade, boolean isQuietStreet, boolean isNearCafe, String size, float rating, double averageRating) {
-        AtomicInteger index = new AtomicInteger(0);  // Use AtomicInteger for the index
+        AtomicInteger index = new AtomicInteger(0);
         for (Uri imageUri : images) {
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
@@ -285,18 +279,20 @@ public class AddBenchActivity extends AppCompatActivity {
         }
     }
 
-
-
+    /**
+     * Creates a bench object and uploads it to Firestore.
+     */
     private void createAndUploadBench(final String benchName, final GeoPoint benchLocation, final boolean hasShade, final boolean isQuietStreet, final boolean isNearCafe, final String size, final List<String> imageUrls, final float rating) {
         List<Float> ratings = new ArrayList<>();
         ratings.add(rating);
-        Bench bench = new Bench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, imageUrls, ratings, null); // averageRating is updated in setRating
+        Bench bench = new Bench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, imageUrls, ratings, null);
         Map<String, Object> benchMap = Bench.toHashMap(bench);
         uploadToFirestore(benchMap, bench);
     }
 
-
-
+    /**
+     * Converts a Bitmap to a URI.
+     */
     private Uri getImageUri(Bitmap bitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -304,21 +300,19 @@ public class AddBenchActivity extends AppCompatActivity {
         return Uri.parse(path);
     }
 
-
-
-    // Helper method to check if a file URI is valid
+    /**
+     * Checks if the given file URI is valid.
+     */
     private boolean isFileUriValid(Uri uri) {
-        if (uri == null) {
-            return false;
-        }
-
+        if (uri == null) return false;
         String scheme = uri.getScheme();
         return scheme != null && scheme.equals("file");
     }
 
-
+    /**
+     * Initializes the views.
+     */
     private void initViews() {
-
         etBenchName = findViewById(R.id.et_bench_name);
         ratingBar = findViewById(R.id.rating_bar);
         cbShade = findViewById(R.id.cb_shade);
@@ -332,6 +326,9 @@ public class AddBenchActivity extends AppCompatActivity {
         ivPhoto = findViewById(R.id.iv_photo);
     }
 
+    /**
+     * Initializes the size spinner.
+     */
     private void initSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.bench_size_options, android.R.layout.simple_spinner_item);
@@ -339,14 +336,16 @@ public class AddBenchActivity extends AppCompatActivity {
         spinnerSize.setAdapter(adapter);
     }
 
+    /**
+     * Initializes the navigation drawer.
+     */
     private void initNavigation() {
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-        setSupportActionBar(toolbar); // Set toolbar as ActionBar
+        setSupportActionBar(toolbar);
 
-        // Handle toolbar buttons
         ImageView backIcon = findViewById(R.id.back_icon);
         backIcon.setOnClickListener(v -> onBackPressed());
 
@@ -354,22 +353,15 @@ public class AddBenchActivity extends AppCompatActivity {
         menuIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
         navigationView.bringToFront();
 
-        // Setup navigation item selection
         navigationView.setNavigationItemSelectedListener(item -> {
-            int id = item.getItemId(); // Get the selected item's ID
+            int id = item.getItemId();
             if (id == R.id.nav_add_bench) {
-                Intent intent = new Intent(AddBenchActivity.this, AddBenchActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(AddBenchActivity.this, AddBenchActivity.class));
             } else if (id == R.id.nav_find_bench) {
-                Intent intent = new Intent(AddBenchActivity.this, HomeActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(AddBenchActivity.this, HomeActivity.class));
             }
-            drawerLayout.closeDrawer(GravityCompat.START); // Close the navigation drawer
+            drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
     }
-
-
-
-
 }
