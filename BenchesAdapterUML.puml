@@ -1,0 +1,23 @@
+@startuml
+class com.example.noaandroid.BenchesAdapter {
+- List<Bench> benchesList
++ BenchesViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(BenchesViewHolder,int)
++ int getItemCount()
++ void updateData(List<Bench>)
+}
+
+
+class com.example.noaandroid.BenchesAdapter$BenchesViewHolder {
++ RatingBar ratingBar
+~ TextView benchName
+~ ImageView benchImage
+~ TextView tvOpenBenchActivity
+}
+
+
+
+com.example.noaandroid.Adapter <|-- com.example.noaandroid.BenchesAdapter
+com.example.noaandroid.BenchesAdapter +.. com.example.noaandroid.BenchesAdapter$BenchesViewHolder
+com.example.noaandroid.ViewHolder <|-- com.example.noaandroid.BenchesAdapter$BenchesViewHolder
+@enduml

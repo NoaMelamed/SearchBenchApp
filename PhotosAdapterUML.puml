@@ -1,0 +1,20 @@
+@startuml
+class com.example.noaandroid.ImageAdapter {
+- Context context
+- List<String> imageUrls
++ ImageViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(ImageViewHolder,int)
++ int getItemCount()
+}
+
+
+class com.example.noaandroid.ImageAdapter$ImageViewHolder {
+~ ImageView imageView
+}
+
+
+
+com.example.noaandroid.Adapter <|-- com.example.noaandroid.ImageAdapter
+com.example.noaandroid.ImageAdapter +.. com.example.noaandroid.ImageAdapter$ImageViewHolder
+com.example.noaandroid.ViewHolder <|-- com.example.noaandroid.ImageAdapter$ImageViewHolder
+@enduml

@@ -1,0 +1,48 @@
+@startuml
+class com.example.noaandroid.SingleBenchActivity {
+- TextView benchTitle
+- Button viewGalleryButton
+~ Button submitButton
+- RatingBar ratingBar
+- ImageView benchImage
+- GoogleMap mMap
+- Bench bench
+- String benchId
+- {static} int CAMERA_REQUEST_CODE
+- {static} int GALLERY_REQUEST_CODE
+- List<Uri> selectedImages
+- String imageUri
+- Uri newImageUri
+- ProgressDialog progressDialog
+- FirebaseStorage storage
+- StorageReference storageRef
+# void onCreate(Bundle)
+- void initViews()
+- void loadBenchDetails(String)
+- void populateBenchDetails()
+- void updateFilterIcons()
+- void updateIconStatus(ImageView,boolean)
+- void initListeners()
+- void showGalleryFragment()
+- void showRatingFragment()
++ void onRatingSubmitted(float)
+- void updateUserRating(String,float)
++ void onMapReady(GoogleMap)
+- void initNavigation()
+- void openImagePicker()
+- void openCamera()
+- void openGallery()
+# void onActivityResult(int,int,Intent)
+- Uri getImageUri(Bitmap)
+- void submitImage()
+- void uploadImagesToStorage(List<Uri>,ProgressDialog)
+- void saveImagesToBench(List<String>,ProgressDialog)
+}
+
+
+
+
+com.google.android.gms.maps.OnMapReadyCallback <|.. com.example.noaandroid.SingleBenchActivity
+com.example.noaandroid.OnRatingSubmittedListener <|.. com.example.noaandroid.SingleBenchActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.noaandroid.SingleBenchActivity
+@enduml

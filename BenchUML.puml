@@ -1,0 +1,37 @@
+@startuml
+class com.example.noaandroid.Bench {
+- String name
++ GeoPoint location
+- List<Float> rating
+- Boolean isShaded
+- Boolean quietStreet
+- Boolean nearCafe
+- String size
+- List<String> imageUri
+- String benchId
+- double averageRating
++ double getAverageRating()
++ DoubleStream getRatingStream()
++ void setBenchId(String)
++ List<Float> getRating()
++ void setRating(List<Float>)
++ String getBenchId()
++ String getName()
++ void setName(String)
++ GeoPoint getLocation()
++ void setLocation(GeoPoint)
++ Boolean getIsShaded()
++ void setIsShaded(Boolean)
++ Boolean getQuietStreet()
++ void setQuietStreet(Boolean)
++ Boolean getNearCafe()
++ void setNearCafe(Boolean)
++ String getSize()
++ void setSize(String)
++ List<String> getImageUri()
++ void setImageUri(List<String>)
++ {static} Map<String,Object> toHashMap(Bench)
+}
+
+
+@enduml

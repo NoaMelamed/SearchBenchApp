@@ -1,0 +1,28 @@
+@startuml
+class com.example.noaandroid.HomeActivity {
+- GoogleMap mMap
+~ Location currentLocation
+- FusedLocationProviderClient fusedLocationClient
+- int FINE_PERMISSION_CODE
+~ FirebaseFirestore db
+~ DrawerLayout drawerLayout
+~ NavigationView navigationView
+~ Toolbar toolbar
+- Map<String,Object> filters
+# void onCreate(Bundle)
+- void initMap()
+- void initNavigation()
+- void initViews()
+- void showFilterFragment()
++ void onMapReady(GoogleMap)
+- void getLastLocation()
++ void onRequestPermissionsResult(int,String[],int[])
+- BitmapDescriptor createCustomMarker(String)
+}
+
+
+
+
+com.google.android.gms.maps.OnMapReadyCallback <|.. com.example.noaandroid.HomeActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.noaandroid.HomeActivity
+@enduml

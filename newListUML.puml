@@ -1,0 +1,37 @@
+@startuml
+class com.example.noaandroid.BenchesListActivity {
+- RecyclerView recyclerView
+- BenchesAdapter adapter
+- FusedLocationProviderClient fusedLocationClient
+- Location currentLocation
+- double userLatitude
+- double userLongitude
+- {static} double DEFAULT_LATITUDE
+- {static} double DEFAULT_LONGITUDE
+- int FINE_PERMISSION_CODE
+- {static} int REQUEST_CODE
+- Map<String,Object> pendingFilters
+- Map<String,Object> pendingAllFields
+# void onCreate(Bundle)
+- void initRecyclerView()
+- void initNavigation()
+- void checkGooglePlayServices()
+- void prepareFiltersAndFetchData()
+- Map<String,Object> retrieveFilters()
+- void fetchFilteredBenches(Map<String,Object>,Map<String,Object>)
+- Query applyFilters(Query,Map<String,Object>,Map<String,Object>)
+- Query applyUserFilter(Query,String,Object)
+- List<Bench> filterByDistance(List<Bench>,GeoPoint,double)
+- double getDistanceBetween(GeoPoint,GeoPoint)
+- void updateRecyclerView(List<Bench>)
+- void showNoResultsMessage(String)
+- void getLastLocationAndThenFetch(Map<String,Object>,Map<String,Object>)
+- void requestLocationPermission()
++ void onRequestPermissionsResult(int,String[],int[])
+}
+
+
+
+
+androidx.appcompat.app.AppCompatActivity <|-- com.example.noaandroid.BenchesListActivity
+@enduml
