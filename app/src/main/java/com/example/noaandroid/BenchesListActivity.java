@@ -33,6 +33,7 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,22 +171,31 @@ public class BenchesListActivity extends AppCompatActivity {
         String size = intent.getStringExtra("size");
         if (size != null && !size.trim().isEmpty()) {
             filters.put("size", size);
-        }
-        if (intent.getBooleanExtra("inShade", false)) {
+        } else {
+            filters.put("size", Arrays.asList("Single", "Regular", "Picnic"));
+        } if (intent.getBooleanExtra("inShade", false)) {
             filters.put("shade", true);
+        } else {
+            filters.put("shade", Arrays.asList(true, false));
         }
         if (intent.getBooleanExtra("quietStreet", false)) {
             filters.put("quietStreet", true);
         }
+        else {
+            filters.put("quietStreet", Arrays.asList(true, false));
+        }
         if (intent.getBooleanExtra("nearCafe", false)) {
             filters.put("nearCafe", true);
         }
-        if (intent.getBooleanExtra("shortDistance", false)) {
-            filters.put("shortDistance", true);
+        else {
+            filters.put("nearCafe", Arrays.asList(true, false));
         }
-        if (intent.getBooleanExtra("highRated", false)) {
-            filters.put("highRated", true);
-        }
+
+        //
+        filters.put("shortDistance", intent.getBooleanExtra("shortDistance", false));
+        filters.put("highRated", intent.getBooleanExtra("highRated", false));
+
+
         Log.d("DEBUG", "Retrieved Filters: " + filters.toString());
         return filters;
     }
@@ -204,7 +214,10 @@ public class BenchesListActivity extends AppCompatActivity {
                     GeoPoint userLocation = new GeoPoint(userLatitude, userLongitude);
                     benches = filterByDistance(benches, userLocation, 500);
                 }
-                updateRecyclerView(benches);
+                if (Boolean.TRUE.equals(userFilters.get("highRated"))) {
+                    //TODO filter by rating
+                }
+                    updateRecyclerView(benches);
             } else {
                 Log.e("Firestore", "Error fetching benches", task.getException());
                 showNoResultsMessage("No matching benches found.");
@@ -218,30 +231,29 @@ public class BenchesListActivity extends AppCompatActivity {
         for (Map.Entry<String, Object> entry : allFields.entrySet()) {
             String fieldName = entry.getKey();
             Object filterValue = userFilters.get(fieldName);
-            if (filterValue != null) {
-                query = applyUserFilter(query, fieldName, filterValue);
+            if (!fieldName.equals("highRated") && !fieldName.equals("shortDistance")) {
+                query = query.whereEqualTo(fieldName, filterValue);
             }
         }
-        if (Boolean.TRUE.equals(userFilters.get("highRated"))) {
-            query = query.whereGreaterThanOrEqualTo("averageRating", 4.0);
-        }
+//        if (Boolean.TRUE.equals(userFilters.get("highRated"))) {
+//            query = query.whereGreaterThanOrEqualTo("averageRating", 4.0);
+//        }
         return query;
     }
 
     /** Applies a single user filter to a query */
-    private Query applyUserFilter(Query query, String fieldName, Object filterValue) {
-        // Add Firestore filter clause
-        if (filterValue instanceof Boolean) {
-            return query.whereEqualTo(fieldName, filterValue);
-        } else if (filterValue instanceof Number) {
-            return query.whereGreaterThanOrEqualTo(fieldName, filterValue);
-        } else if (filterValue instanceof String) {
-            return query.whereEqualTo(fieldName, filterValue);
-        } else {
-            Log.w("FirestoreQuery", "Unsupported filter type: " + filterValue.getClass());
-            return query;
-        }
-    }
+//    private Query applyUserFilter(Query query, String fieldName, Object filterValue) {
+//        // Add Firestore filter clause
+//        if (filterValue instanceof Boolean) {
+//            return query.whereEqualTo(fieldName, filterValue);
+//        }
+//        else if (filterValue instanceof String) {
+//            return query.whereEqualTo(fieldName, filterValue);
+//        } else {
+//            Log.w("FirestoreQuery", "Unsupported filter type: " + filterValue.getClass());
+//            return query;
+//        }
+//    }
 
     /** Filters a list of benches by distance */
     private List<Bench> filterByDistance(List<Bench> benches, GeoPoint userLocation, double radius) {

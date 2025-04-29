@@ -98,6 +98,7 @@ public class BenchFiltersFragment extends Fragment {
         }
 
         // Retrieve boolean values from the switches
+        // We don't accept false - either user filters or not (true / don't care)
         boolean inShade = switchShade.isChecked();
         boolean quietStreet = switchQuietStreet.isChecked();
         boolean nearCafe = switchNearCafe.isChecked();
