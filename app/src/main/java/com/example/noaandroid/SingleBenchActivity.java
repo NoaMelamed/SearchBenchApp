@@ -171,16 +171,15 @@ public class SingleBenchActivity extends AppCompatActivity implements OnMapReady
         ImageView noiseIcon = findViewById(R.id.noise_icon);
         ImageView cafeIcon = findViewById(R.id.cafe_icon);
 
-        updateIconStatus(shadedIcon, false);  // Example: not shaded
-        updateIconStatus(noiseIcon, true);    // Example: quiet
-        updateIconStatus(cafeIcon, false);    // Example: no cafe
+        updateIconStatus(shadedIcon, bench.getIsShaded());
+        updateIconStatus(noiseIcon, bench.getQuietStreet());
+        updateIconStatus(cafeIcon, bench.getNearCafe());
+
+
     }
 
     /**
      * Updates the individual icon's status based on the value of isChecked.
-     *
-     * @param iconView The icon ImageView to update.
-     * @param isChecked The status (checked or unchecked).
      */
     private void updateIconStatus(ImageView iconView, boolean isChecked) {
         if (isChecked) {
@@ -266,13 +265,7 @@ public class SingleBenchActivity extends AppCompatActivity implements OnMapReady
             Bench bench = snapshot.toObject(Bench.class);
             if (bench == null) return null;
 
-            List<Float> ratings = bench.getRating();
-            if (ratings == null) {
-                ratings = new ArrayList<>();
-            }
-            ratings.add(newRating);
-            bench.setRating(ratings); // Update the ratings list in the Bench object
-
+            bench.addRating(newRating); // updates both, the ratings (list) and their average
             transaction.set(benchRef, bench); // Use set to update the entire document
             return null;
         }).addOnSuccessListener(aVoid -> {

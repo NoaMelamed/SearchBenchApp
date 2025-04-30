@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.content.Intent;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,11 +37,6 @@ public class LoginActivity extends AppCompatActivity {
                 EditText etPasswordLogin = findViewById(R.id.et_password_login);
                 String emailLogin = etEmailLogin.getText().toString();
                 String passwordLogin = etPasswordLogin.getText().toString();
-
-                // for now - skip login
-//                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-//                startActivity(intent);
-                // Attempt to log in the user
                 loginClient(emailLogin, passwordLogin);
             }
         });
@@ -68,22 +64,19 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Attempts to authenticate the user with the provided email and password.
-     * @param emailLogin The email entered by the user.
+     *
+     * @param emailLogin    The email entered by the user.
      * @param passwordLogin The password entered by the user.
      */
     private void loginClient(String emailLogin, String passwordLogin) {
-//        auth.signInWithEmailAndPassword(emailLogin, passwordLogin).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-//            @Override
-//            public void onSuccess(AuthResult authResult) {
-//                // If login is successful, show a welcome dialog
-//                showLoginAlertDialog();
-//                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-//            }
-//        });
-
-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-        startActivity(intent); // <-- This was missing
-
+        auth.signInWithEmailAndPassword(emailLogin, passwordLogin).addOnSuccessListener(authResult -> {
+            // If login is successful, show a welcome dialog
+            showLoginAlertDialog();
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            startActivity(intent);
+        }).addOnFailureListener(failure -> {
+            Toast.makeText(this, "Failed to login, try again", Toast.LENGTH_SHORT).show();
+        });
     }
 
     /**

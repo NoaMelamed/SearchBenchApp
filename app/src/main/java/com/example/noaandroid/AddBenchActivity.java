@@ -283,9 +283,7 @@ public class AddBenchActivity extends AppCompatActivity {
      * Creates a bench object and uploads it to Firestore.
      */
     private void createAndUploadBench(final String benchName, final GeoPoint benchLocation, final boolean hasShade, final boolean isQuietStreet, final boolean isNearCafe, final String size, final List<String> imageUrls, final float rating) {
-        List<Float> ratings = new ArrayList<>();
-        ratings.add(rating);
-        Bench bench = new Bench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, imageUrls, ratings, null);
+        Bench bench = new Bench(benchName, benchLocation, hasShade, isQuietStreet, isNearCafe, size, imageUrls, rating);
         Map<String, Object> benchMap = Bench.toHashMap(bench);
         uploadToFirestore(benchMap, bench);
     }

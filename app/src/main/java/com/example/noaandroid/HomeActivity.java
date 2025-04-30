@@ -146,7 +146,6 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         Button findBenchBtn = findViewById(R.id.findBenchButton);
         findBenchBtn.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, BenchesListActivity.class);
-            intent.putExtra("defaultFilters", true);
             startActivity(intent);
         });
     }

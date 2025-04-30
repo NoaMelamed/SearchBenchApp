@@ -83,38 +83,36 @@ public class BenchFiltersFragment extends Fragment {
         Intent intent = new Intent(getActivity(), BenchesListActivity.class);
 
         // Get the selected bench size from the RadioGroup
-        String selectedSize = null;
         int selectedId = radioGroupBenchSize.getCheckedRadioButtonId();
         Log.d("DEBUG", "selectedID " + selectedId);
 
+        String size = null;
         if (selectedId == R.id.radioSingleSeat) {
-            selectedSize = "Single";
+            size = "Single";
         } else if (selectedId == R.id.radioRegularSize) {
-            selectedSize = "Regular";
+            size = "Regular";
         } else if (selectedId == R.id.radioPicnicSize) {
-            selectedSize = "Picnic";
-        } else {
-            selectedSize = ""; // Default to empty if no option is selected
+            size = "Picnic";
         }
 
         // Retrieve boolean values from the switches
         // We don't accept false - either user filters or not (true / don't care)
-        boolean inShade = switchShade.isChecked();
+        boolean isShaded = switchShade.isChecked();
         boolean quietStreet = switchQuietStreet.isChecked();
         boolean nearCafe = switchNearCafe.isChecked();
         boolean shortDistance = switchShortDistance.isChecked();
         boolean highRated = switchHighRated.isChecked();
 
         // Add all filter data as extras to the Intent
-        intent.putExtra("size", selectedSize);
-        intent.putExtra("inShade", inShade);
+        intent.putExtra("size", size); // this extra is the only nullable in the bundle
+        intent.putExtra("isShaded", isShaded);
         intent.putExtra("quietStreet", quietStreet);
         intent.putExtra("nearCafe", nearCafe);
         intent.putExtra("shortDistance", shortDistance);
         intent.putExtra("highRated", highRated);
 
         // Log the selected size for debugging
-        Log.d("DEBUG", "Passing size filter: " + selectedSize);
+        Log.w("Noa's", "bundleFilters: " + intent.getExtras());
 
         return intent;
     }
