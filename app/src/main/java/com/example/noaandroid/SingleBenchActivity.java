@@ -78,6 +78,7 @@ public class SingleBenchActivity extends AppCompatActivity implements OnMapReady
         initViews();
         initListeners();
         initNavigation();
+        initMap();
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
@@ -92,6 +93,9 @@ public class SingleBenchActivity extends AppCompatActivity implements OnMapReady
             finish(); // Close activity if no ID is provided
         }
 
+    }
+
+    private void initMap() {
         // Initialize map fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_fragment);
@@ -134,7 +138,7 @@ public class SingleBenchActivity extends AppCompatActivity implements OnMapReady
             }
         }).addOnFailureListener(e -> {
             Toast.makeText(SingleBenchActivity.this, "Error loading bench", Toast.LENGTH_SHORT).show();
-            Log.e("Firestore", "Error fetching bench data", e);
+            Log.e("Noa's", "Error fetching bench data", e);
         });
     }
 
@@ -265,7 +269,7 @@ public class SingleBenchActivity extends AppCompatActivity implements OnMapReady
             Bench bench = snapshot.toObject(Bench.class);
             if (bench == null) return null;
 
-            bench.addRating(newRating); // updates both, the ratings (list) and their average
+            bench.addRating(newRating); // updates both the ratings (list) and their average
             transaction.set(benchRef, bench); // Use set to update the entire document
             return null;
         }).addOnSuccessListener(aVoid -> {
@@ -274,7 +278,7 @@ public class SingleBenchActivity extends AppCompatActivity implements OnMapReady
             loadBenchDetails(benchId); // Reload the bench details after rating update
         }).addOnFailureListener(e -> {
             Toast.makeText(SingleBenchActivity.this, "Error updating rating", Toast.LENGTH_SHORT).show();
-            Log.e("Firestore", "Error updating rating", e);
+            Log.e("Noa's", "Error updating rating", e);
         });
     }
     /**

@@ -194,8 +194,6 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Zoom camera to current location
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
-        } else {
-            Toast.makeText(this, "Unable to fetch current location", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -217,7 +215,6 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onSuccess(Location location) {
                 if (location != null) {
                     currentLocation = location;
-
                     // Initialize map again with updated location
                     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.mapFragment);

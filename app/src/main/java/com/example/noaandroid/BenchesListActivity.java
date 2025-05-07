@@ -180,7 +180,7 @@ public class BenchesListActivity extends AppCompatActivity {
             }
         }
 
-        // NOTE: all highRated fields is non-null
+        // NOTE: highRated field is non-null
         if ((boolean) filtersBundle.get("highRated")) {
             // Log.d("Noa's", boolFilter + "=true");
             query = query.whereGreaterThanOrEqualTo("averageRating", HIGH_RATING_MIN_VAL);

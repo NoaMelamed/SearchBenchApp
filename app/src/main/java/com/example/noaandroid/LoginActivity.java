@@ -2,6 +2,8 @@ package com.example.noaandroid;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +30,10 @@ public class LoginActivity extends AppCompatActivity {
         // Initialize the FirebaseAuth instance
         auth = FirebaseAuth.getInstance();
 
+        initViews();
+    }
+
+    private void initViews() {
         // Set up the login button click listener
         Button loginButton = findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -37,7 +43,11 @@ public class LoginActivity extends AppCompatActivity {
                 EditText etPasswordLogin = findViewById(R.id.et_password_login);
                 String emailLogin = etEmailLogin.getText().toString();
                 String passwordLogin = etPasswordLogin.getText().toString();
-                loginClient(emailLogin, passwordLogin);
+                if (!emailLogin.isEmpty() && !passwordLogin.isEmpty()) {
+                    loginClient(emailLogin, passwordLogin);
+                } else {
+                    Toast.makeText(LoginActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -72,10 +82,9 @@ public class LoginActivity extends AppCompatActivity {
         auth.signInWithEmailAndPassword(emailLogin, passwordLogin).addOnSuccessListener(authResult -> {
             // If login is successful, show a welcome dialog
             showLoginAlertDialog();
-            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            startActivity(intent);
+
         }).addOnFailureListener(failure -> {
-            Toast.makeText(this, "Failed to login, try again", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Incorrect email or password, try again", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -87,14 +96,11 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Welcome to SearchMyBench!");
         adb.setMessage("Glad you signed in! Now let's find you a bench");
-        adb.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Navigate to the home activity and finish the current activity
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        adb.setPositiveButton("Continue", (dialog, which) -> {
+            // Navigate to the home activity and finish the current activity
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
         });
         adb.setCancelable(false); // Prevent dialog dismissal via outside touch or back button
         AlertDialog dialog = adb.create();

@@ -3,6 +3,7 @@ package com.example.noaandroid;
 import static com.example.noaandroid.Bench.toHashMap;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -89,6 +91,7 @@ public class AddBenchActivity extends AppCompatActivity {
         initNavigation(); // Setup navigation drawer
         initListeners();  // Set listeners for buttons
 
+        showAlertDialog();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         db = FirebaseFirestore.getInstance();
     }
@@ -362,4 +365,22 @@ public class AddBenchActivity extends AppCompatActivity {
             return true;
         });
     }
+
+    private void showAlertDialog () {
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle("Add a new bench to the database");
+        adb.setMessage("Add the bench details in the following fileds. Make sure you are standing in front of it, to get the right location!");
+        adb.setPositiveButton("I'm in front of it", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // closed automatically
+            }
+        });
+        adb.setCancelable(false); // Prevent dialog dismissal via outside touch or back button
+        AlertDialog dialog = adb.create();
+        dialog.show();
+    }
+
 }
+
+

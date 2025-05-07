@@ -1,7 +1,12 @@
 package com.example.noaandroid;
 
 import android.content.Intent;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +18,16 @@ import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 /**
  * A Fragment that handles filters for benches.
  */
 public class BenchFiltersFragment extends Fragment {
+
+    private final Rect ICON_BOUNDS = new Rect(0, 0, 58, 58);
+
 
     /**
      * Inflates the layout and initializes the filter view.
@@ -43,7 +52,9 @@ public class BenchFiltersFragment extends Fragment {
         RadioGroup radioGroupBenchSize = view.findViewById(R.id.radioGroupBenchSize);
         RadioButton radioSingleSeat = view.findViewById(R.id.radioSingleSeat);
         RadioButton radioRegularSize = view.findViewById(R.id.radioRegularSize);
-        RadioButton radioPicnicSize = view.findViewById(R.id.radioPicnicSize); // Newly added picnic size option
+        RadioButton radioPicnicSize = view.findViewById(R.id.radioPicnicSize);
+
+        initSizeIcons(radioSingleSeat, radioRegularSize, radioPicnicSize);
 
         // Initialize Switches for various filter criteria
         Switch switchShade = view.findViewById(R.id.switchShade);
@@ -70,6 +81,26 @@ public class BenchFiltersFragment extends Fragment {
             // Navigate to the BenchesListActivity with filter data
             startActivity(intent);
         });
+
+
+    }
+
+    private void initSizeIcons(RadioButton radioSingleSeat, RadioButton radioRegularSize, RadioButton radioPicnicSize) {
+        applyIconToRadioButton(radioSingleSeat, R.drawable.ic_single_bench, "Single seat");
+        applyIconToRadioButton(radioRegularSize, R.drawable.bench_icon, "Regular size");
+        applyIconToRadioButton(radioPicnicSize, R.drawable.ic_picnic_table, "Picnic bench");
+    }
+
+    private void applyIconToRadioButton(RadioButton button, int drawableRes, String label) {
+        Drawable icon = ContextCompat.getDrawable(requireContext(), drawableRes);
+        if (icon != null) {
+            icon.setBounds(new Rect(ICON_BOUNDS)); // clone to avoid shared mutation
+            ImageSpan imageSpan = new ImageSpan(icon, ImageSpan.ALIGN_BOTTOM);
+            SpannableString spannableString = new SpannableString("   " + label);
+            spannableString.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            button.setText(spannableString);
+        }
+
     }
 
     /**
@@ -116,4 +147,6 @@ public class BenchFiltersFragment extends Fragment {
 
         return intent;
     }
+
+
 }

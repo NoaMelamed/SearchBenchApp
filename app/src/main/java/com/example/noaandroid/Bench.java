@@ -221,6 +221,11 @@ public class Bench {
         this.imageUri = imageUri;
     }
 
+    /**
+     * Calculates the average rating from the list of ratings.
+     *
+     * @return The average rating, or 0.0 if there are no ratings.
+     */
     public double getAverageRating() {
         return this.averageRating;
     }
